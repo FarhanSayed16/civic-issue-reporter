@@ -1,6 +1,7 @@
 *log
 venv/
 .env/
+apps/api/.env
 __pycache__/
 *.pyc
 alembic/versions/
