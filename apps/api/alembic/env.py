@@ -54,6 +54,9 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
+# File: E:/civic-issue-reporter/apps/api/alembic/env.py
+# Replace the entire function with this one.
+
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
 
@@ -62,21 +65,23 @@ def run_migrations_online() -> None:
 
     """
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        config.get_section(config.config_main_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
+        # This is the new, smarter function
+        def include_object(object, name, type_, reflected, compare_to):
+            # This will only include tables that are defined in your models.py
+            return type_ == "table" and object.name in target_metadata.tables
+
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            # Use the new, smarter function here
+            include_object=include_object
         )
 
         with context.begin_transaction():
             context.run_migrations()
-
-
-if context.is_offline_mode():
-    run_migrations_offline()
-else:
-    run_migrations_online()
