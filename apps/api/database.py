@@ -3,16 +3,19 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-import os
-from dotenv import load_dotenv
+from configparser import ConfigParser # <-- Import this
 
-# Load .env from current folder (apps/api/.env)
-load_dotenv(dotenv_path=".env")
+# This function reads the alembic.ini file to get the database URL
+def get_database_url_from_alembic():
+    config = ConfigParser()
+    config.read('alembic.ini') # Assumes alembic.ini is in the same folder
+    return config.get('alembic', 'sqlalchemy.url')
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+# Use the function to get the URL
+DATABASE_URL = get_database_url_from_alembic()
 
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL is not set. Check your .env file path.")
+    raise ValueError("Could not read DATABASE_URL from alembic.ini")
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
