@@ -1,21 +1,21 @@
 # docker-compose.yml
-version: '3.8'
+# version: '3.8'
 
 services:
-  # PostgreSQL Database with PostGIS extension for mapping
-  db:
-    image: postgis/postgis:15-3.3
+  postgres-db:
+    image: postgis/postgis:15-3.3 # Use a PostGIS-enabled image
     container_name: civic_postgres
-    env_file:
-      - .env # Loads the credentials from the .env file
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Farhan123
+      POSTGRES_DB: civic_db
     ports:
-      - "5432:5432" # Connects your PC's port 5432 to the container's port 5432
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Persists data
+      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
-  # Redis for background jobs and real-time messaging
-  cache:
+  redis-cache:
     image: redis:7-alpine
     container_name: civic_redis
     ports:
