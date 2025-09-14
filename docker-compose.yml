@@ -6,8 +6,8 @@ services:
     image: postgis/postgis:15-3.3 # Use a PostGIS-enabled image
     container_name: civic_postgres
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Farhan123
       POSTGRES_DB: civic_db
     ports:
       - "5432:5432"
