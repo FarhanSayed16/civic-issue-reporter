@@ -35,12 +35,13 @@ freelancer-frontend/
 freelancer-backend/
 frontend/
 civic_issue_backend/
-apps/web/src/
 apps/mobile/node_modules/
 apps/web/src/components/
 apps/web/src/router.jsx
 apps/web/src/pages/
-apps/web/src/pages/HomePage.jsx
-apps/web/src/pages/LoginPage.jsx
-apps/web/src/pages/SignupPage.jsx
 apps/web/public/
+apps/web/src/features/
+apps/web/src/hooks
+apps/web/src/lib/
+apps/web/src/styles/
+apps/web/src/utils/
