@@ -7,87 +7,39 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Modern & Vibrant Color Palette
-        transparentBtn1: '#F1F5F9', // Refined light slate
-        transparentBtn2: '#E2E8F0', // Elegant medium slate
-        
-        mainBg: '#FAFBFC', // Pure, clean background
-        
+        // Refined Government UI Palette
+        mainBg: '#F7F8FA',
+
+        // Deep authoritative blue for chrome and CTAs
         primary: {
-          DEFAULT: '#3B82F6', // Modern vibrant blue
-          light: '#60A5FA',   // Lighter blue
-          dark: '#1E40AF',    // Deep blue
-          foreground: '#FFFFFF' // Pure white text
+          DEFAULT: '#0F2A59',
+          light: '#1E3A8A',
+          dark: '#0B1E40',
+          foreground: '#FFFFFF'
         },
-        
-        secondary: {
-          DEFAULT: '#8B5CF6', // Rich purple
-          light: '#A78BFA',   // Soft purple
-          dark: '#7C3AED',    // Deep purple
-          foreground: '#FFFFFF' // Pure white text
-        },
-        
+
+        // Teal/green accent for active/success
         accent: {
-          DEFAULT: '#F59E0B', // Warm amber
-          light: '#FCD34D',   // Golden yellow
-          dark: '#D97706',    // Deep orange
-          foreground: '#1F2937' // Dark gray text
-        },
-        
-        success: {
-          DEFAULT: '#10B981', // Fresh emerald green
-          light: '#34D399',   // Light green
-          dark: '#059669',    // Deep green
+          DEFAULT: '#16A34A',
+          light: '#22C55E',
+          dark: '#15803D',
           foreground: '#FFFFFF'
         },
-        
-        warning: {
-          DEFAULT: '#F97316', // Vibrant orange
-          light: '#FB923C',   // Light orange
-          dark: '#EA580C',    // Deep orange
-          foreground: '#FFFFFF'
-        },
-        
-        error: {
-          DEFAULT: '#EF4444', // Modern red
-          light: '#F87171',   // Light red
-          dark: '#DC2626',    // Deep red
-          foreground: '#FFFFFF'
-        },
-        
+
+        // Neutral grayscale for backgrounds and text
         neutral: {
-          50: '#F9FAFB',      // Ultra light
-          100: '#F3F4F6',     // Very light gray
-          200: '#E5E7EB',     // Light gray
-          300: '#D1D5DB',     // Medium light gray
-          400: '#9CA3AF',     // Medium gray
-          500: '#6B7280',     // Default gray
-          600: '#4B5563',     // Medium dark gray
-          700: '#374151',     // Dark gray
-          800: '#1F2937',     // Very dark gray
-          900: '#111827',     // Ultra dark gray
-          DEFAULT: '#E5E7EB', // Light gray for borders
-          dark: '#4B5563'     // Dark gray for text
-        },
-        
-        // Gradient colors for more dynamic designs
-        gradient: {
-          primary: {
-            from: '#667EEA',   // Soft blue
-            to: '#764BA2'      // Purple blend
-          },
-          secondary: {
-            from: '#FF6B6B',   // Coral
-            to: '#4ECDC4'      // Turquoise
-          },
-          accent: {
-            from: '#FFD93D',   // Bright yellow
-            to: '#FF6B6B'      // Coral red
-          },
-          success: {
-            from: '#11998E',   // Teal
-            to: '#38EF7D'      // Mint green
-          }
+          50: '#FAFAFA',
+          100: '#F4F6F8',
+          200: '#E6E8EB',
+          300: '#D0D5DD',
+          400: '#98A2B3',
+          500: '#667085',
+          600: '#475467',
+          700: '#344054',
+          800: '#1D2939',
+          900: '#101828',
+          DEFAULT: '#E6E8EB',
+          dark: '#475467'
         },
         
         // Keeping your shadcn-ui colors and other custom definitions
