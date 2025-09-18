@@ -38,10 +38,7 @@ civic_issue_backend/
 apps/mobile/node_modules/
 apps/web/src/components/
 apps/web/src/router.jsx
-apps/web/src/pages/
 apps/web/public/
 apps/web/src/features/
-apps/web/src/hooks
-apps/web/src/lib/
-apps/web/src/styles/
-apps/web/src/utils/
+apps/web/public/
+civic_issue_project/
