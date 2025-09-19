@@ -42,8 +42,5 @@ fontend/apps/web/node_modules/
 frontend/apps/web/public/
 frontend/apps/web/src/components/
 frontend/apps/web/src/pages/
-frontend/apps/web/src/hooks/
-frontend/apps/web/src/layouts/
-frontend/apps/web/src/utils/
 frontend/apps/web/src/features/
 
