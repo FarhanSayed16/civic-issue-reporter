@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civic Reporter - UI Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="phone-container">
+        <div class="phone-screen">
+
+            <main id="page-content" class="page-content"></main>
+
+            <nav class="bottom-nav">
+                <button class="nav-button active" data-page="home">
+                    <i data-lucide="home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-button" data-page="map">
+                    <i data-lucide="map"></i>
+                    <span>Map</span>
+                </button>
+                <button class="nav-button" data-page="report">
+                    <i data-lucide="plus-circle" class="w-8 h-8"></i>
+                    <span>Report</span>
+                </button>
+                <button class="nav-button" data-page="profile">
+                    <i data-lucide="user"></i>
+                    <span>Profile</span>
+                </button>
+            </nav>
+
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

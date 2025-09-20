@@ -1,0 +1,50 @@
+<div class="p-4 flex flex-col h-full">
+    <h1 data-animate="fade-in-down" class="text-2xl font-bold text-gray-800 mb-4">Report New Issue</h1>
+
+    <div data-animate="fade-in-down" style="--delay: 100ms;" class="progress-bar">
+        <div id="progress-step-1" class="progress-step active"></div>
+        <div id="progress-step-2" class="progress-step"></div>
+        <div id="progress-step-3" class="progress-step"></div>
+    </div>
+
+    <div id="step-1-capture" class="report-step active">
+        <h2 data-animate="fade-in-up" style="--delay: 200ms;" class="font-semibold text-gray-600 mb-2">Step 1: Add a Photo</h2>
+        <div data-animate="fade-in-up" style="--delay: 300ms;" class="image-placeholder">
+            <i data-lucide="camera" class="w-16 h-16 text-gray-400"></i>
+            <p class="mt-2 text-sm text-gray-500">Tap to take a photo</p>
+        </div>
+        <button data-next-step="step-2-category" class="nav-step-btn mt-6 w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg">Next</button>
+    </div>
+
+    <div id="step-2-category" class="report-step">
+        <h2 data-animate="fade-in-up" style="--delay: 200ms;" class="font-semibold text-gray-600 mb-4">Step 2: Select a Category</h2>
+        <div data-animate="fade-in-up" style="--delay: 300ms;" class="grid grid-cols-2 gap-4">
+            <button class="category-button"><i data-lucide="milestone" class="w-8 h-8"></i><span>Pothole</span></button>
+            <button class="category-button"><i data-lucide="lightbulb" class="w-8 h-8"></i><span>Streetlight</span></button>
+            <button class="category-button"><i data-lucide="trash-2" class="w-8 h-8"></i><span>Garbage</span></button>
+            <button class="category-button"><i data-lucide="droplets" class="w-8 h-8"></i><span>Water Issue</span></button>
+        </div>
+        <div class="flex gap-4 mt-8">
+            <button data-prev-step="step-1-capture" class="nav-step-btn w-1/2 bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg">Back</button>
+            <button data-next-step="step-3-details" class="nav-step-btn w-1/2 bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg">Next</button>
+        </div>
+    </div>
+
+    <div id="step-3-details" class="report-step">
+        <h2 data-animate="fade-in-up" style="--delay: 200ms;" class="font-semibold text-gray-600 mb-4">Step 3: Add Details</h2>
+        <div data-animate="fade-in-up" style="--delay: 300ms;">
+            <label for="description" class="text-sm font-medium text-gray-700">Description</label>
+            <textarea id="description" rows="4" class="form-input" placeholder="e.g., The streetlight is flickering..."></textarea>
+        </div>
+        <div data-animate="fade-in-up" style="--delay: 400ms;" class="mt-4">
+            <label class="text-sm font-medium text-gray-700">Location</label>
+            <div class="mt-1 border border-gray-300 rounded-lg overflow-hidden">
+                <img src="https://i.imgur.com/qL4a2bA.png" alt="Map snippet" class="h-24 w-full object-cover">
+            </div>
+        </div>
+        <div class="flex gap-4 mt-8">
+            <button data-prev-step="step-2-category" class="nav-step-btn w-1/2 bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg">Back</button>
+            <button class="w-1/2 bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">Submit Issue</button>
+        </div>
+    </div>
+</div>
