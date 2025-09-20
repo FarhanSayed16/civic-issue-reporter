@@ -1,0 +1,75 @@
+<div class="p-4">
+    <div data-animate="fade-in-down" style="--delay: 100ms;">
+        <p class="text-lg text-gray-500">Good Morning,</p>
+        <h1 class="text-3xl font-bold text-gray-800">Farhan</h1>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mt-6">
+        <div data-animate="fade-in-up" style="--delay: 200ms;" class="stat-card">
+            <h3 class="font-bold text-2xl text-yellow-600">3</h3>
+            <p class="text-xs text-gray-500">Pending Issues</p>
+        </div>
+        <div data-animate="fade-in-up" style="--delay: 300ms;" class="stat-card">
+            <h3 class="font-bold text-2xl text-green-600">12</h3>
+            <p class="text-xs text-gray-500">Resolved Reports</p>
+        </div>
+    </div>
+
+    <div data-animate="fade-in-up" style="--delay: 400ms;" class="mt-8">
+        <div class="action-card">
+            <div class="flex-shrink-0">
+                <i data-lucide="pencil" class="w-8 h-8 text-white"></i>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-bold text-white">Report a New Issue</h3>
+                <p class="text-sm text-indigo-200 mt-1">Spotted a problem? Let us know.</p>
+            </div>
+            <i data-lucide="arrow-right" class="w-6 h-6 text-indigo-300"></i>
+        </div>
+    </div>
+
+
+    <div class="mt-8">
+        <h2 data-animate="fade-in-up" style="--delay: 500ms;" class="text-xl font-bold text-gray-800 mb-4">Recent Activity in Your Area</h2>
+
+        <div data-animate="fade-in-up" style="--delay: 600ms;" class="issue-card">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center text-sm text-gray-500 font-medium">
+                    <i data-lucide="road" class="w-4 h-4 mr-2"></i> Pothole
+                </div>
+                <span class="text-xs text-gray-400">5m ago</span>
+            </div>
+            <p class="my-3 text-gray-700">Large pothole causing traffic issues near the main junction on SV Road.</p>
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <img src="https://i.pravatar.cc/24?u=a" alt="user avatar" class="w-6 h-6 rounded-full mr-2">
+                    <span class="text-xs text-gray-500">Reported by R. Sharma</span>
+                </div>
+                <button class="upvote-button">
+                    <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                    <span>12</span>
+                </button>
+            </div>
+        </div>
+
+        <div data-animate="fade-in-up" style="--delay: 700ms;" class="issue-card">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center text-sm text-gray-500 font-medium">
+                    <i data-lucide="lightbulb" class="w-4 h-4 mr-2"></i> Streetlight
+                </div>
+                <span class="text-xs text-gray-400">2h ago</span>
+            </div>
+            <p class="my-3 text-gray-700">Streetlight #P-345 is out, making the area unsafe at night.</p>
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <img src="https://i.pravatar.cc/24?u=b" alt="user avatar" class="w-6 h-6 rounded-full mr-2">
+                    <span class="text-xs text-gray-500">Reported by A. Khan</span>
+                </div>
+                <button class="upvote-button active">
+                    <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                    <span>6</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
