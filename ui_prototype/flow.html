@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Implementation Flow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #f9fafb; }
+    .step { min-width: 160px; }
+    .arrow svg { width: 60px; height: 24px; }
+  </style>
+</head>
+<body class="flex justify-center items-center min-h-screen">
+  <div class="bg-white shadow-lg rounded-2xl p-8 max-w-6xl">
+    <h1 class="text-2xl font-bold text-center mb-10 text-gray-800">Implementation Flow</h1>
+    <div class="flex items-center justify-center space-x-6">
+
+      <!-- REPORT -->
+      <div class="step bg-green-500 text-white rounded-xl p-6 text-center shadow-lg">
+        <div class="text-3xl mb-2">📱</div>
+        <div class="font-bold">REPORT</div>
+        <p class="text-sm mt-1">(Citizen App)</p>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow text-gray-500">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 50 24">
+          <path d="M0 12h46M38 4l8 8-8 8"/>
+        </svg>
+      </div>
+
+      <!-- PROCESS -->
+      <div class="step bg-blue-500 text-white rounded-xl p-6 text-center shadow-lg">
+        <div class="text-3xl mb-2">⚙️</div>
+        <div class="font-bold">PROCESS</div>
+        <p class="text-sm mt-1">(FastAPI + PostgreSQL)</p>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow text-gray-500">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 50 24">
+          <path d="M0 12h46M38 4l8 8-8 8"/>
+        </svg>
+      </div>
+
+      <!-- VISUALIZE -->
+      <div class="step bg-yellow-500 text-white rounded-xl p-6 text-center shadow-lg">
+        <div class="text-3xl mb-2">🗺️</div>
+        <div class="font-bold">VISUALIZE</div>
+        <p class="text-sm mt-1">(React Dashboard)</p>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow text-gray-500">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 50 24">
+          <path d="M0 12h46M38 4l8 8-8 8"/>
+        </svg>
+      </div>
+
+      <!-- ACT -->
+      <div class="step bg-purple-500 text-white rounded-xl p-6 text-center shadow-lg">
+        <div class="text-3xl mb-2">👩‍💼</div>
+        <div class="font-bold">ACT</div>
+        <p class="text-sm mt-1">(Admin Updates)</p>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow text-gray-500">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 50 24">
+          <path d="M0 12h46M38 4l8 8-8 8"/>
+        </svg>
+      </div>
+
+      <!-- NOTIFY -->
+      <div class="step bg-red-500 text-white rounded-xl p-6 text-center shadow-lg">
+        <div class="text-3xl mb-2">🔔</div>
+        <div class="font-bold">NOTIFY</div>
+        <p class="text-sm mt-1">(WebSocket)</p>
+      </div>
+
+    </div>
+
+    <!-- Loop Back Arrow -->
+    <div class="flex justify-center mt-10">
+      <svg class="w-96 h-24 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 400 100">
+        <path d="M400 20 H40 V80 H0" />
+        <path d="M10 70 L0 80 L10 90" />
+      </svg>
+    </div>
+    <p class="text-center text-gray-600 text-sm mt-2">Feedback loop: status updates sent back to citizens</p>
+  </div>
+</body>
+</html>
