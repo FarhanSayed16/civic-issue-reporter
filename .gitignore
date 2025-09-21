@@ -38,8 +38,7 @@ Model_training/
 apps.zip/
 frontend/apps/mobile/
 frontend/apps/api/
-fontend/apps/web/node_modules/
+frontend/apps/web/node_modules/
 frontend/apps/web/public/
-frontend/apps/web/src/components/
 frontend/apps/web/src/pages/
 
