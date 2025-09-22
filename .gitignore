@@ -37,8 +37,6 @@ apps/web/src/router.jsx
 Model_training/
 apps.zip/
 frontend/apps/mobile/
-frontend/apps/api/
+
 frontend/apps/web/node_modules/
 frontend/apps/web/public/
-frontend/apps/mobile.zip/
-frontend/apps/web.zip/
