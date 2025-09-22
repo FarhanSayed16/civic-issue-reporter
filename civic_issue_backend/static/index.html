@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civic Issue Management System</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-city"></i>
+                <h1>Civic Issue Management</h1>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="userName"></span>
+                <button onclick="logout()" class="btn btn-outline">Logout</button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('login')">Login/Register</button>
+            <button class="tab-btn" onclick="showTab('issues')">Report Issues</button>
+            <button class="tab-btn" onclick="showTab('map')">View Issues</button>
+            <button class="tab-btn" onclick="showTab('admin')">Admin Dashboard</button>
+            <button class="tab-btn" onclick="showTab('analytics')">Analytics</button>
+        </nav>
+
+        <!-- Login/Register Tab -->
+        <div id="login" class="tab-content active">
+            <div class="auth-container">
+                <div class="auth-form">
+                    <h2>Login</h2>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label>Phone Number:</label>
+                            <input type="tel" id="loginPhone" placeholder="9876543210" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
+                
+                <div class="auth-form">
+                    <h2>Register</h2>
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label>Full Name:</label>
+                            <input type="text" id="regName" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number:</label>
+                            <input type="tel" id="regPhone" placeholder="9876543210" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="regPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Issues Tab -->
+        <div id="issues" class="tab-content">
+            <div class="issues-container">
+                <h2>Report New Issue</h2>
+                <form id="issueForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category:</label>
+                            <select id="issueCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Pothole">Pothole</option>
+                                <option value="Streetlight">Streetlight</option>
+                                <option value="Garbage">Garbage</option>
+                                <option value="Water">Water Issue</option>
+                                <option value="Road">Road Problem</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ward:</label>
+                            <select id="issueWard" required>
+                                <option value="">Select Ward</option>
+                                <option value="Andheri">Andheri</option>
+                                <option value="Bandra">Bandra</option>
+                                <option value="Dadar">Dadar</option>
+                                <option value="Mumbai Central">Mumbai Central</option>
+                                <option value="Thane">Thane</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea id="issueDescription" placeholder="Describe the issue in detail..." required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Latitude:</label>
+                            <input type="number" id="issueLat" step="0.000001" placeholder="19.0760" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Longitude:</label>
+                            <input type="number" id="issueLng" step="0.000001" placeholder="72.8777" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Photo Upload:</label>
+                        <input type="file" id="issuePhoto" accept="image/*">
+                        <button type="button" onclick="uploadPhoto()" class="btn btn-secondary">Upload Photo</button>
+                        <div id="photoStatus"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Report Issue</button>
+                </form>
+                
+                <div class="my-issues">
+                    <h3>My Reported Issues</h3>
+                    <div id="myIssuesList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Tab -->
+        <div id="map" class="tab-content">
+            <div class="map-container">
+                <h2>Issues Map</h2>
+                <div class="map-filters">
+                    <select id="mapCategory" onchange="loadIssues()">
+                        <option value="">All Categories</option>
+                        <option value="Pothole">Pothole</option>
+                        <option value="Streetlight">Streetlight</option>
+                        <option value="Garbage">Garbage</option>
+                        <option value="Water">Water Issue</option>
+                        <option value="Road">Road Problem</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select id="mapStatus" onchange="loadIssues()">
+                        <option value="">All Status</option>
+                        <option value="new">New</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                    <button onclick="getCurrentLocation()" class="btn btn-secondary">Use My Location</button>
+                </div>
+                <div id="issuesList" class="issues-list"></div>
+            </div>
+        </div>
+
+        <!-- Admin Tab -->
+        <div id="admin" class="tab-content">
+            <div class="admin-container">
+                <h2>Admin Dashboard</h2>
+                <div class="admin-filters">
+                    <select id="adminStatus" onchange="loadAdminIssues()">
+                        <option value="">All Status</option>
+                        <option value="new">New</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                    <select id="adminWard" onchange="loadAdminIssues()">
+                        <option value="">All Wards</option>
+                        <option value="Andheri">Andheri</option>
+                        <option value="Bandra">Bandra</option>
+                        <option value="Dadar">Dadar</option>
+                        <option value="Mumbai Central">Mumbai Central</option>
+                        <option value="Thane">Thane</option>
+                    </select>
+                    <select id="adminCategory" onchange="loadAdminIssues()">
+                        <option value="">All Categories</option>
+                        <option value="Pothole">Pothole</option>
+                        <option value="Streetlight">Streetlight</option>
+                        <option value="Garbage">Garbage</option>
+                        <option value="Water">Water Issue</option>
+                        <option value="Road">Road Problem</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select id="adminSort" onchange="loadAdminIssues()">
+                        <option value="created_at">Sort by Date</option>
+                        <option value="upvote_count">Sort by Upvotes</option>
+                    </select>
+                </div>
+                <div id="adminIssuesList" class="admin-issues-list"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="analytics-container">
+                <h2>Analytics Dashboard</h2>
+                <div class="stats-grid" id="statsGrid"></div>
+                <div class="heatmap-container">
+                    <h3>Issues Heatmap</h3>
+                    <div class="heatmap-filters">
+                        <select id="heatmapStatus" onchange="loadHeatmap()">
+                            <option value="">All Status</option>
+                            <option value="new">New</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                        <select id="heatmapCategory" onchange="loadHeatmap()">
+                            <option value="">All Categories</option>
+                            <option value="Pothole">Pothole</option>
+                            <option value="Streetlight">Streetlight</option>
+                            <option value="Garbage">Garbage</option>
+                            <option value="Water">Water Issue</option>
+                            <option value="Road">Road Problem</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div id="heatmapData" class="heatmap-data"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="statusMessage" class="status-message"></div>
+    </div>
+
+    <script src="/static/script.js?v=2"></script>
+</body>
+</html>
+
