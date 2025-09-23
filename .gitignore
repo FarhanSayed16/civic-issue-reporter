@@ -1,14 +1,17 @@
 *log
 venv/
-.env/
 __pycache__/
 
-.DS_Store
-apps/.idea
 .idea/
 .vscode/
 civic_issue_backend/.venv/
-frontend/apps/mobile/
+frontend/apps/mobile/node_modules/ 
+frontend/apps/mobile/android/
+frontend/apps/mobile/ios/
+frontend/apps/mobile/ios/Pods/
+frontend/apps/web/.expo/
+frontend/apps/web/.expo-shared/
+
+
 frontend/apps/web/node_modules/
 frontend/apps/web/public/
-frontend/apps/mobile.zip
