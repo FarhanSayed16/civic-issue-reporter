@@ -6,7 +6,6 @@ __pycache__/
 .vscode/
 civic_issue_backend/.venv/
 frontend/apps/mobile/node_modules/ 
-frontend/apps/mobile/android/
 frontend/apps/mobile/ios/
 frontend/apps/mobile/ios/Pods/
 frontend/apps/web/.expo/
