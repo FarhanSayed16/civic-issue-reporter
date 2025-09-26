@@ -5,11 +5,4 @@ __pycache__/
 .idea/
 .vscode/
 civic_issue_backend/.venv/
-frontend/apps/mobile/node_modules/ 
 
-frontend/apps/web/.expo/
-frontend/apps/web/.expo-shared/
-
-
-frontend/apps/web/node_modules/
-frontend/apps/web/public/
