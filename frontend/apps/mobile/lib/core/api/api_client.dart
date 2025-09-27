@@ -9,7 +9,7 @@ final dio = Dio(
     // - If you're running on iOS Simulator: use http://127.0.0.1:8585/
     // - If you're running Flutter Web: http://localhost:8585/
     // baseUrl: 'http://localhost:8585/',
-    baseUrl: 'https://swgl27bt-8585.inc1.devtunnels.ms/',
+    baseUrl: 'https://3blkgv75-8585.inc1.devtunnels.ms/',
 
     // ⬆️ Increased timeouts to handle slower connections and image uploads
     connectTimeout: const Duration(seconds: 15), // was 5

@@ -4,6 +4,7 @@ from jose import jwt
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.models.user import User
+from app.schemas.user import UserUpdate
 from typing import List, Optional
 
 pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -12,7 +13,7 @@ class AuthService:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_user(self, full_name, phone_number, password):
+    def create_user(self, full_name, phone_number, password, role="citizen", department=None):
         # Check if user already exists
         existing_user = self.db.query(User).filter(User.phone_number == phone_number).first()
         if existing_user:
@@ -22,7 +23,10 @@ class AuthService:
                 "full_name": existing_user.full_name,
                 "phone_number": existing_user.phone_number,
                 "role": existing_user.role,
+                "department": existing_user.department,
+                "ward": existing_user.ward,
                 "trust_score": existing_user.trust_score,
+                "profile_picture_url": existing_user.profile_picture_url,
                 "created_at": existing_user.created_at,
                 "updated_at": existing_user.updated_at
             }
@@ -31,8 +35,10 @@ class AuthService:
         user = User(
             full_name=full_name,
             phone_number=phone_number,
+            phone_number_hash=pwd_ctx.hash(phone_number),  # Encrypt phone number
             password_hash=pwd_ctx.hash(password),
-            role="citizen",
+            role=role,
+            department=department,
             trust_score=100.0
         )
         
@@ -45,7 +51,10 @@ class AuthService:
             "full_name": user.full_name,
             "phone_number": user.phone_number,
             "role": user.role,
+            "department": user.department,
+            "ward": user.ward,
             "trust_score": user.trust_score,
+            "profile_picture_url": user.profile_picture_url,
             "created_at": user.created_at,
             "updated_at": user.updated_at
         }
@@ -75,7 +84,37 @@ class AuthService:
             "full_name": user.full_name,
             "phone_number": user.phone_number,
             "role": user.role,
+            "department": user.department,
+            "ward": user.ward,
             "trust_score": user.trust_score,
+            "profile_picture_url": user.profile_picture_url,
+            "created_at": user.created_at,
+            "updated_at": user.updated_at
+        }
+
+    def update_user_profile(self, user_id: int, user_update: UserUpdate):
+        user = self.db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return None
+        
+        if user_update.full_name is not None:
+            user.full_name = user_update.full_name
+        if user_update.profile_picture_url is not None:
+            user.profile_picture_url = user_update.profile_picture_url
+        
+        user.updated_at = datetime.utcnow()
+        self.db.commit()
+        self.db.refresh(user)
+        
+        return {
+            "id": user.id,
+            "full_name": user.full_name,
+            "phone_number": user.phone_number,
+            "role": user.role,
+            "department": user.department,
+            "ward": user.ward,
+            "trust_score": user.trust_score,
+            "profile_picture_url": user.profile_picture_url,
             "created_at": user.created_at,
             "updated_at": user.updated_at
         }
@@ -94,7 +133,10 @@ class AuthService:
                 "full_name": user.full_name,
                 "phone_number": user.phone_number,
                 "role": user.role,
+                "department": user.department,
+                "ward": user.ward,
                 "trust_score": user.trust_score,
+                "profile_picture_url": user.profile_picture_url,
                 "created_at": user.created_at,
                 "updated_at": user.updated_at
             }
