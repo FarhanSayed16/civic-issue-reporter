@@ -10,9 +10,13 @@ class AnalyticsService:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_stats(self, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None):
+    def get_stats(self, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None, department: Optional[str] = None):
         """Get key KPI numbers for dashboard header"""
         query = self.db.query(Issue)
+        
+        # Filter by department if provided
+        if department:
+            query = query.filter(Issue.assigned_department == department)
         
         # Filter by date range if provided
         if start_date:
@@ -57,12 +61,9 @@ class AnalyticsService:
         else:
             avg_resolution_time_hours = 0.0
         
-        # Top category and ward
+        # Top category
         categories = Counter(issue.category for issue in issues)
         top_category = categories.most_common(1)[0][0] if categories else "None"
-        
-        wards = Counter(issue.ward or "Unknown" for issue in issues)
-        top_ward = wards.most_common(1)[0][0] if wards else "Unknown"
         
         return StatsResponse(
             total_issues=total_issues,
@@ -72,14 +73,15 @@ class AnalyticsService:
             resolved_this_week=resolved_this_week,
             avg_resolution_time_hours=round(avg_resolution_time_hours, 2),
             top_category=top_category,
-            top_ward=top_ward
         )
     
-    def get_heatmap_data(self, status: Optional[str] = None, category: Optional[str] = None):
+    def get_heatmap_data(self, status: Optional[str] = None, category: Optional[str] = None, department: Optional[str] = None):
         """Get issue coordinates for heatmap visualization"""
         query = self.db.query(Issue)
         
         # Apply filters
+        if department:
+            query = query.filter(Issue.assigned_department == department)
         if status:
             query = query.filter(Issue.status == status)
         if category:

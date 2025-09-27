@@ -5,9 +5,8 @@ export const issuesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     initiateUpload: builder.mutation({
       query: (filename) => ({
-        url: '/issues/initiate-upload',
+        url: `/issues/initiate-upload?filename=${encodeURIComponent(filename)}`,
         method: 'POST',
-        body: { filename },
       }),
     }),
 
@@ -35,6 +34,11 @@ export const issuesApi = apiSlice.injectEndpoints({
         const queryString = searchParams.toString();
         return `/issues${queryString ? `?${queryString}` : ''}`;
       },
+      providesTags: ['Issue'],
+    }),
+
+    getUserIssues: builder.query({
+      query: () => '/issues/my-issues',
       providesTags: ['Issue'],
     }),
 
@@ -71,6 +75,7 @@ export const {
   useInitiateUploadMutation,
   useCreateIssueMutation,
   useGetIssuesQuery,
+  useGetUserIssuesQuery,
   useSearchIssuesQuery,
   useGetIssueQuery,
   useUpvoteIssueMutation,

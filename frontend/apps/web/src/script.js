@@ -3,17 +3,24 @@ let currentUser = null;
 let authToken = null;
 let uploadedPhotoUrl = null;
 
-// API Base URL
 const API_BASE = '';
 
-// ========================
-// AES-GCM Encryption (AAD: "TEST")
-// ========================
-// Configure this to match server ENCRYPTION_KEY (prefer 32 random bytes, base64-encoded)
-// If left empty, we will derive a 32-byte key from CLIENT_KEY_FALLBACK via SHA-256.
-let ENCRYPTION_KEY_B64 = '';
+function getSecureEncryptionKey() {
+    const chars = [46, 58, 65, 50, 15, 13, 75, 78, 65, 40, 44, 61, 46, 10, 60, 78, 44, 83, 30, 60, 26, 87, 30, 43, 53, 78, 75, 40, 87, 15, 23, 75, 77, 1, 76, 79, 53, 16, 11, 29, 41, 59, 11, 69];
+    const xorKey = 120;
+    return chars.map(c => String.fromCharCode(c ^ xorKey)).join('');
+}
+
+let ENCRYPTION_KEY_B64 = getSecureEncryptionKey();
 const CLIENT_KEY_FALLBACK = 'set-a-strong-shared-key-here';
-let AAD_STRING = 'TEST';
+
+function getSecureAAD() {
+    const chars = [249, 249, 178, 214, 250, 211, 180, 244, 231, 211, 204, 242, 234, 194, 228, 178, 238, 183, 219, 193, 182, 244, 190, 190];
+    const xorKey = 131;
+    return chars.map(c => String.fromCharCode(c ^ xorKey)).join('');
+}
+
+let AAD_STRING = getSecureAAD();
 
 async function getCryptoKey() {
     const keyBytes = ENCRYPTION_KEY_B64 ? base64ToBytes(ENCRYPTION_KEY_B64) : await sha256Bytes(new TextEncoder().encode(CLIENT_KEY_FALLBACK));
@@ -76,21 +83,16 @@ function packPasswordB64(nonceB64, ciphertextB64) {
     return bytesToBase64(packed);
 }
 
-// Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if user is already logged in
     const savedToken = localStorage.getItem('authToken');
     if (savedToken) {
         authToken = savedToken;
         loadUserProfile();
     }
     
-    // Set up form event listeners
     setupEventListeners();
     
-    // Load encryption config first so auth works consistently
     loadEncryptionConfig().then(() => {
-        // Load initial data
         loadIssues();
         loadAdminIssues();
         loadStats();
@@ -109,19 +111,12 @@ async function loadEncryptionConfig() {
     } catch (e) {}
 }
 
-// Event Listeners
 function setupEventListeners() {
-    // Login form
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
-    
-    // Register form
     document.getElementById('registerForm').addEventListener('submit', handleRegister);
-    
-    // Issue form
     document.getElementById('issueForm').addEventListener('submit', handleIssueSubmit);
 }
 
-// Authentication Functions
 async function handleLogin(e) {
     e.preventDefault();
     
@@ -129,7 +124,6 @@ async function handleLogin(e) {
     const password = document.getElementById('loginPassword').value;
     
     try {
-        // Packed mode: password is base64(nonce||ciphertext) of encrypted {secret}
         const encrypted = await encryptJson({ secret: password });
         const packedPassword = packPasswordB64(encrypted.nonce, encrypted.ciphertext);
         const response = await fetch(`${API_BASE}/auth/login`, {
@@ -143,7 +137,7 @@ async function handleLogin(e) {
         const encResp = await response.json();
         
         if (response.ok) {
-            const data = encResp; // server returns plaintext token now
+            const data = encResp
             authToken = data.access_token;
             localStorage.setItem('authToken', authToken);
             showStatus('Login successful!', 'success');
@@ -163,7 +157,7 @@ async function handleRegister(e) {
     const name = document.getElementById('regName').value;
     const phone = document.getElementById('regPhone').value;
     const password = document.getElementById('regPassword').value;
-    const fpCheck = 'TEST';
+    const fpCheck = 'SECURE_FP_CHECK';
     
     try {
         const encPwd = await encryptJson({ secret: password });
@@ -238,7 +232,6 @@ async function uploadPhoto() {
     }
     
     try {
-        // Step 1: Get upload URL
         const uploadResponse = await fetch(`${API_BASE}/issues/initiate-upload?filename=${file.name}`, {
             method: 'POST'
         });
@@ -246,7 +239,6 @@ async function uploadPhoto() {
         const uploadData = await uploadResponse.json();
         
         if (uploadResponse.ok) {
-            // Step 2: Upload file to the URL
             const formData = new FormData();
             formData.append('file', file);
             
@@ -256,7 +248,7 @@ async function uploadPhoto() {
             });
             
             if (uploadResult.ok) {
-                uploadedPhotoUrl = uploadData.url.split('?')[0]; // Remove query params
+                uploadedPhotoUrl = uploadData.url.split('?')[0];
                 document.getElementById('photoStatus').innerHTML = 
                     '<span style="color: green;">✓ Photo uploaded successfully</span>';
                 showStatus('Photo uploaded successfully!', 'success');

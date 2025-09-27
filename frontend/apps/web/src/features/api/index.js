@@ -20,8 +20,8 @@ export {
 } from './admin.api';
 export { 
   analyticsApi, 
-  useGetStatsQuery, 
-  useGetHeatmapDataQuery 
+  useGetAnalyticsStatsQuery, 
+  useGetAnalyticsHeatmapQuery 
 } from './analytics.api';
 export { 
   notificationsApi, 
