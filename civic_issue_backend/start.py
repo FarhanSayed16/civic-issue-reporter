@@ -28,10 +28,10 @@ def main():
     print("🌐 Starting web server...")
     print("📱 Web Interface: http://localhost:8585/frontend")
     print("📚 API Docs: http://localhost:8585/docs")
-    print("❤️  Health Check: http://localhost:8585/")
+    print("❤️ Health Check: http://localhost:8585/")
     print("\n🎯 Demo Credentials:")
-    print("   Citizen: Phone: 9876543210 | Password: password123")
-    print("   Admin: Phone: 9876543212 | Password: admin123")
+    print("     Citizen: Phone: 9876543210 | Password: password123")
+    print("     Admin: Phone: 9876543212 | Password: admin123")
     print("\nPress Ctrl+C to stop the server\n")
     
     try:
