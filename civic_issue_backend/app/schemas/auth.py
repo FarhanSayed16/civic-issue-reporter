@@ -14,6 +14,8 @@ class RegisterRequest(BaseModel):
     full_name: str
     phone_number: str
     password: str
+    role: str = "citizen"
+    department: Optional[str] = None
 
 
 class EncryptedRequest(BaseModel):

@@ -10,7 +10,6 @@ class StatsResponse(BaseModel):
     resolved_this_week: int
     avg_resolution_time_hours: float
     top_category: str
-    top_ward: str
 
 class HeatmapPoint(BaseModel):
     lat: float

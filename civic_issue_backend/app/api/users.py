@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app.schemas.user import UserOut
+from app.schemas.user import UserOut, UserUpdate
 from app.schemas.issue import IssueOut
 from app.services.auth_service import AuthService
 from app.services.issue_service import IssueService
@@ -14,6 +14,18 @@ router = APIRouter()
 def get_me(current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     auth_service = AuthService(db)
     user = auth_service.get_user(current_user["id"])
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@router.put("/me", response_model=UserOut)
+def update_profile(
+    user_update: UserUpdate,
+    current_user: dict = Depends(get_current_user), 
+    db: Session = Depends(get_db)
+):
+    auth_service = AuthService(db)
+    user = auth_service.update_user_profile(current_user["id"], user_update)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
