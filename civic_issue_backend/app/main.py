@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from app.core.encryption import get_key_b64, AAD_VALUE
-from app.api import auth, issues, users, notifications, admin, analytics
+from app.api import auth, issues, users, notifications, admin, analytics, ai, messages
 from app.core.db import create_tables
 
 app = FastAPI(title="Civic Issue Reporting Backend")
@@ -35,6 +35,8 @@ app.include_router(issues.router, prefix="/issues", tags=["Issues"])
 app.include_router(notifications.router, prefix="/notifications", tags=["Notifications"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin Dashboard"])
 app.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
+app.include_router(ai.router, prefix="/ai", tags=["AI"])
+app.include_router(messages.router, prefix="/messages", tags=["Messages"])
 
 @app.get("/")
 def root():
