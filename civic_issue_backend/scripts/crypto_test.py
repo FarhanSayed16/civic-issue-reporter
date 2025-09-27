@@ -6,7 +6,7 @@ from hashlib import sha256
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 
-AAD = b"TEST"
+AAD = b"zz1UyP7wdPOqiAg1m4XB5w=="
 
 
 def get_key() -> bytes:

@@ -1,7 +1,8 @@
 // AES-GCM crypto utilities aligned with backend/static script.js
+import { getEncryptionKey, getAADString } from './key_manager';
 
-let ENCRYPTION_KEY_B64 = '';
-let AAD_STRING = 'TEST';
+let ENCRYPTION_KEY_B64 = getEncryptionKey(); // Use obfuscated key
+let AAD_STRING = getAADString(); // Use obfuscated AAD
 const CLIENT_KEY_FALLBACK = 'set-a-strong-shared-key-here';
 
 export function setEncryptionConfig({ key_b64, aad } = {}) {

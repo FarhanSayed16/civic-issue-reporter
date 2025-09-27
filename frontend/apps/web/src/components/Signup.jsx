@@ -1,11 +1,13 @@
 import { useLoginMutation, useRegisterMutation } from '../features/api/auth.api';
 import { encryptJson, packPasswordB64 } from '../lib/crypto';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // Import Link for navigation
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faUser, faEnvelope, faPhone, faLock, faCheckCircle, faSpinner, faExclamationCircle, faChevronDown, faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { useHCaptcha } from '../hooks/useHCaptcha';
 
 // Input Component (forwardRef is important for react-hook-form)
 const Input = React.forwardRef(({ className, ...props }, ref) => (
@@ -35,6 +37,9 @@ const Button = ({ children, className, ...props }) => (
 
 function Signup() {
   const navigate = useNavigate();
+  const { siteKey, loading: hcaptchaLoading } = useHCaptcha();
+  const hcaptchaRef = useRef(null);
+  const [hcaptchaToken, setHcaptchaToken] = useState(null);
   const [formData, setFormData] = useState({
     full_name: '',
     phone_number: '',
@@ -93,30 +98,55 @@ function Signup() {
       return;
     }
     
+    // Check if hCaptcha is verified
+    if (!hcaptchaToken) {
+      setServerError('Please complete the hCaptcha verification');
+      return;
+    }
+    
     setServerError(''); // Clear previous server errors
 
     try {
+      // Encrypt password, phone number, and fp_check
       const encPwd = await encryptJson({ secret: formData.password });
       const packedPassword = packPasswordB64(encPwd.nonce, encPwd.ciphertext);
+      
+      const encPhone = await encryptJson({ secret: formData.phone_number });
+      const packedPhone = packPasswordB64(encPhone.nonce, encPhone.ciphertext);
+      
       const encFp = await encryptJson({ fp_check: 'TEST' });
       const packedFp = packPasswordB64(encFp.nonce, encFp.ciphertext);
+      
       const registerPayload = {
         full_name: formData.full_name,
-        phone_number: formData.phone_number,
+        phone_number: packedPhone,
         password: packedPassword,
         fp_check: packedFp,
+        hcaptcha_token: hcaptchaToken,
       };
       const res = await registerUser(registerPayload).unwrap();
       if (res) {
         const enc = await encryptJson({ secret: formData.password });
         const packed = packPasswordB64(enc.nonce, enc.ciphertext);
-        await login({ phone_number: formData.phone_number, password: packed }).unwrap();
+        const encPhoneLogin = await encryptJson({ secret: formData.phone_number });
+        const packedPhoneLogin = packPasswordB64(encPhoneLogin.nonce, encPhoneLogin.ciphertext);
+        
+        await login({ 
+          phone_number: packedPhoneLogin, 
+          password: packed,
+          hcaptcha_token: hcaptchaToken
+        }).unwrap();
         navigate('/'); // Navigate to home or dashboard
       }
     } catch (err) {
       console.error('Registration error:', err);
       const errorMessage = err.data?.detail || 'Signup failed. Please try again.';
       setServerError(errorMessage);
+      // Reset hCaptcha on error
+      if (hcaptchaRef.current) {
+        hcaptchaRef.current.resetCaptcha();
+        setHcaptchaToken(null);
+      }
     }
   };
 
@@ -256,6 +286,19 @@ function Signup() {
                 </div>
               </div>
             </div>
+
+            {/* hCaptcha */}
+            {siteKey && !hcaptchaLoading && (
+              <div className="flex justify-center">
+                <HCaptcha
+                  ref={hcaptchaRef}
+                  sitekey={siteKey}
+                  onVerify={setHcaptchaToken}
+                  onError={() => setHcaptchaToken(null)}
+                  onExpire={() => setHcaptchaToken(null)}
+                />
+              </div>
+            )}
 
             {/* Submit Button */}
             <div className="mt-8">

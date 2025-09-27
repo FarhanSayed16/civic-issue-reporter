@@ -16,11 +16,19 @@ const authSlice = createSlice({
       state.token = access_token;
       state.refreshToken = refresh_token;
       state.isAuthenticated = true;
+      
+      // Store token in localStorage for WebSocket service
+      localStorage.setItem('accessToken', access_token);
+      localStorage.setItem('refreshToken', refresh_token);
     },
     tokenReceived: (state, action) => {
       const { access_token, refresh_token } = action.payload;
       state.token = access_token;
       state.refreshToken = refresh_token;
+      
+      // Store updated tokens in localStorage
+      localStorage.setItem('accessToken', access_token);
+      localStorage.setItem('refreshToken', refresh_token);
     },
     // features/authSlice.js
 // ...
@@ -30,9 +38,9 @@ const authSlice = createSlice({
   state.refreshToken = null;
   state.isAuthenticated = false;
 
-  // Clear both tokens from storage, just in case
-  localStorage.removeItem('token');
-  localStorage.removeItem('refreshToken'); // If you store this separately
+  // Clear tokens from localStorage
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
 }
 //...
   },

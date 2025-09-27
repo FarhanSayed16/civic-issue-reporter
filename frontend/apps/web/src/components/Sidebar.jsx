@@ -1,11 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ListChecks, BarChart3, HelpCircle } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { LayoutDashboard, ListChecks, BarChart3, HelpCircle, Shield } from 'lucide-react';
 
 const links = [
   { to: '/home', icon: LayoutDashboard, label: 'Dashboard', end: false },
   { to: '/issues', icon: ListChecks, label: 'All Issues', end: false },
-  { to: '/reports', icon: BarChart3, label: 'Reports', end: false },
+  { to: '/my-issues', icon: ListChecks, label: 'My Assigned Issues', end: false },
   { to: '/help-settings', icon: HelpCircle, label: 'Help & Settings', end: false },
 ];
 
