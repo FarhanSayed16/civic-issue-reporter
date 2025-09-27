@@ -6,3 +6,12 @@ __pycache__/
 .vscode/
 civic_issue_backend/.venv/
 
+civic_issue_backend/.env
+frontend/apps/mobile/
+frontend/apps/web/
+frontend/packages/
+frontend/node_modules/
+frontend/.env
+frontend/web/node_modules/
+civic_issue_backend/nginx_logs/
+civic_issue_backend/nginx/
