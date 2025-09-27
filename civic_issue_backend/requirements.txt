@@ -10,3 +10,5 @@ boto3==1.26.0
 pydantic==1.10.9
 python-multipart==0.0.6
 cryptography==42.0.7
+ultralytics==8.2.103
+torch>=2.0.0; platform_system != 'Windows' or platform_machine != 'ARM64'
