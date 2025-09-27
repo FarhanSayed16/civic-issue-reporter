@@ -7,7 +7,7 @@ class ConnectionManager:
         self.user_connections: Dict[int, List[WebSocket]] = {}
 
     async def connect(self, websocket: WebSocket, user_id: int = None):
-        await websocket.accept()
+        # Don't accept here - the endpoint should handle acceptance
         self.active_connections.append(websocket)
         
         if user_id:

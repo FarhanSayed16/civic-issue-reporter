@@ -27,3 +27,35 @@ def create_tables():
     """Create all database tables"""
     from app.models import User, Issue, Upvote
     Base.metadata.create_all(bind=engine)
+    # Lightweight migrations for SQLite: add missing columns if needed
+    try:
+        if settings.DATABASE_URL.startswith("sqlite"):
+            with engine.connect() as conn:
+                cols = conn.exec_driver_sql("PRAGMA table_info(issues)").fetchall()
+                col_names = {c[1] for c in cols}
+                if "is_anonymous" not in col_names:
+                    conn.exec_driver_sql("ALTER TABLE issues ADD COLUMN is_anonymous BOOLEAN DEFAULT 0")
+                # Address columns
+                if "address_line1" not in col_names:
+                    conn.exec_driver_sql("ALTER TABLE issues ADD COLUMN address_line1 VARCHAR(200)")
+                if "address_line2" not in col_names:
+                    conn.exec_driver_sql("ALTER TABLE issues ADD COLUMN address_line2 VARCHAR(200)")
+                if "street" not in col_names:
+                    conn.exec_driver_sql("ALTER TABLE issues ADD COLUMN street VARCHAR(100)")
+                if "landmark" not in col_names:
+                    conn.exec_driver_sql("ALTER TABLE issues ADD COLUMN landmark VARCHAR(100)")
+                if "pincode" not in col_names:
+                    conn.exec_driver_sql("ALTER TABLE issues ADD COLUMN pincode VARCHAR(20)")
+                if "is_verified" not in col_names:
+                    conn.exec_driver_sql("ALTER TABLE issues ADD COLUMN is_verified BOOLEAN DEFAULT 1")
+                if "severity_score" not in col_names:
+                    conn.exec_driver_sql("ALTER TABLE issues ADD COLUMN severity_score FLOAT DEFAULT 0.5")
+                
+                # Check users table for profile picture
+                user_cols = conn.exec_driver_sql("PRAGMA table_info(users)").fetchall()
+                user_col_names = {c[1] for c in user_cols}
+                if "profile_picture_url" not in user_col_names:
+                    conn.exec_driver_sql("ALTER TABLE users ADD COLUMN profile_picture_url VARCHAR(500)")
+    except Exception:
+        # Best-effort migration; ignore if fails
+        pass

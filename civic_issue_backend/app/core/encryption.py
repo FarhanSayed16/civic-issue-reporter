@@ -8,9 +8,20 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from hashlib import sha256
 
 from app.core.config import settings
+from app.core.key_manager import get_aad_string
 
 
-AAD_VALUE: bytes = b"TEST"
+def _get_aad_value() -> bytes:
+    """Get the obfuscated AAD string"""
+    try:
+        aad_string = get_aad_string()
+        return aad_string.encode('utf-8')
+    except Exception:
+        # Fallback to secure default
+        return b"zz1UyP7wdPOqiAg1m4XB5w=="
+
+
+AAD_VALUE: bytes = _get_aad_value()
 
 
 def _get_aesgcm_key() -> bytes:
