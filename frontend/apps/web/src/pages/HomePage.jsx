@@ -18,7 +18,7 @@ import {
 
 // Import the hooks from your API slice files
 import { useGetIssuesQuery } from '@/features/api/issues.api';
-import { useGetStatsQuery } from '@/features/api/analytics.api';
+import { useGetAnalyticsStatsQuery } from '@/features/api';
 
 // Import the components
 import { MapView } from '@/components/MapView';
@@ -121,21 +121,23 @@ export default function HomePage() {
   // State for filters
   const [filters, setFilters] = useState({
     status: 'All Status',
-    ward: 'All Wards',
     category: 'All Categories',
     sortBy: 'date'
   });
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   // Fetch data
   const { data: issues, isLoading: issuesLoading, isError: issuesError, refetch } = useGetIssuesQuery();
-  const { data: stats, isLoading: statsLoading, isError: statsError } = useGetStatsQuery();
+  const { data: stats, isLoading: statsLoading, isError: statsError } = useGetAnalyticsStatsQuery();
   console.log('Fetched issues:', issues);
   console.log('Fetched stats:', stats);
   
   // Filter options
   const statusOptions = ['All Status', 'New', 'In Progress', 'Resolved'];
-  const wardOptions = ['All Wards', 'Andheri', 'Bandra', 'Dadar', 'Mumbai Central', 'Thane'];
-  const categoryOptions = ['All Categories', 'Pothole', 'Streetlight', 'Garbage', 'Water Issue', 'Road Problem', 'Other'];
+  const categoryOptions = ['All Categories', 'Potholes', 'Road Cracks', 'Manholes', 'Stagnant Water', 'Damaged Signboards', 'Garbage Overflow', 'Trash', 'Other Issues'];
   const sortOptions = [
     { value: 'date', label: 'Date' },
     { value: 'priority', label: 'Priority' },
@@ -190,9 +192,6 @@ export default function HomePage() {
       filtered = filtered.filter(issue => issue.status === filters.status);
     }
     
-    if (filters.ward !== 'All Wards') {
-      filtered = filtered.filter(issue => issue.ward === filters.ward);
-    }
     
     if (filters.category !== 'All Categories') {
       filtered = filtered.filter(issue => issue.category === filters.category);
@@ -217,6 +216,23 @@ export default function HomePage() {
     return processIssuesForMap(filtered);
   }, [issues, filters]);
 
+  // Paginated issues for display
+  const paginatedIssues = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredIssues.slice(startIndex, endIndex);
+  }, [filteredIssues, currentPage, itemsPerPage]);
+
+  // Pagination info
+  const totalPages = Math.ceil(filteredIssues.length / itemsPerPage);
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, filteredIssues.length);
+
+  // Reset to first page when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
   // Count issues for each filter
   const getStatusCount = (status) => {
     if (!issues) return 0;
@@ -224,11 +240,6 @@ export default function HomePage() {
     return issues.filter(issue => issue.status === status).length;
   };
 
-  const getWardCount = (ward) => {
-    if (!issues) return 0;
-    if (ward === 'All Wards') return issues.length;
-    return issues.filter(issue => issue.ward === ward).length;
-  };
 
   const getCategoryCount = (category) => {
     if (!issues) return 0;
@@ -312,7 +323,7 @@ export default function HomePage() {
       <div className="flex-1 flex overflow-hidden">
         
         {/* Left - Map */}
-        <div className="w-2/5 p-3">
+        <div className="w-1/2 lg:w-2/5 p-3">
           <div className="h-full bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <div className="h-8 bg-gradient-to-r from-blue-500 to-blue-600 flex items-center px-3">
               <MapPin className="text-white w-4 h-4 mr-2" />
@@ -329,10 +340,10 @@ export default function HomePage() {
         </div>
 
         {/* Right - Content */}
-        <div className="w-3/5 p-3 pl-0 flex">
+        <div className="w-1/2 lg:w-3/5 p-3 pl-0 flex">
           
           {/* Filters Sidebar */}
-          <div className="w-48 bg-white rounded-l-lg border border-r-0 border-gray-200 shadow-sm p-3 overflow-y-auto">
+          <div className="w-40 lg:w-48 bg-white rounded-l-lg border border-r-0 border-gray-200 shadow-sm p-3 overflow-y-auto">
             <div className="flex items-center gap-2 mb-3">
               <Filter size={14} className="text-gray-500" />
               <span className="text-sm font-semibold text-gray-700">Filters</span>
@@ -358,24 +369,6 @@ export default function HomePage() {
               </div>
             </FilterSection>
 
-            {/* Ward Filters */}
-            <FilterSection 
-              title="Wards" 
-              icon={<MapPin size={12} className="text-gray-400" />}
-            >
-              <div className="space-y-1">
-                {wardOptions.map((ward) => (
-                  <FilterButton
-                    key={ward}
-                    active={filters.ward === ward}
-                    onClick={() => setFilters({ ...filters, ward })}
-                    count={getWardCount(ward)}
-                  >
-                    {ward}
-                  </FilterButton>
-                ))}
-              </div>
-            </FilterSection>
 
             {/* Category Filters */}
             <FilterSection 
@@ -426,6 +419,9 @@ export default function HomePage() {
                   <span className="text-sm font-semibold text-blue-800">
                     Recent Issues ({filteredIssues.length})
                   </span>
+                  <span className="text-xs text-blue-600">
+                    Showing {startItem}-{endItem} of {filteredIssues.length}
+                  </span>
                 </div>
                 <div className="text-xs text-blue-600 flex items-center gap-1">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
@@ -436,8 +432,64 @@ export default function HomePage() {
 
             {/* Issue List */}
             <div className="space-y-3">
-              <IssueList issues={filteredIssues} />
+              <IssueList issues={paginatedIssues} />
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-6 flex items-center justify-between">
+                <div className="text-sm text-gray-500">
+                  Page {currentPage} of {totalPages}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  
+                  {/* Page numbers */}
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 2) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 1) {
+                        pageNum = totalPages - 2 + i;
+                      } else {
+                        pageNum = currentPage - 1 + i;
+                      }
+                      
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`px-3 py-1 text-sm border rounded-md ${
+                            currentPage === pageNum
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  
+                  <button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

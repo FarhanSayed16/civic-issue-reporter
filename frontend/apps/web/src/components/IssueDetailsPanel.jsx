@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 // Import the specific hooks we need from our API and UI slices
-import { useGetIssueQuery, useUpdateIssueStatusMutation } from '@/features/api';
+import { useGetIssueQuery } from '@/features/api';
 import { setSelectedIssue } from '@/store/slices/uiSlice';
 import { Loader } from '.';
 import { Button } from './ui/button';
@@ -29,14 +29,6 @@ export function IssueDetailsPanel() {
   console.log('Selected Issue ID:', selectedIssueId);
   console.log('Fetched Issue Data:', issue);
 
-  // 3. Prepare the mutation hook for updating the status
-  const [updateIssueStatus, { isLoading: isUpdating }] = useUpdateIssueStatusMutation();
-
-  const handleUpdateStatus = (newStatus) => {
-    if (issue) {
-      updateIssueStatus({ issueId: issue.id, status: newStatus });
-    }
-  };
 
   const handleClearSelection = () => {
     dispatch(setSelectedIssue(null));
@@ -86,49 +78,115 @@ export function IssueDetailsPanel() {
           <label className="text-sm font-semibold text-gray-500">Description</label>
           <p className="text-gray-800">{issue.description}</p>
         </div>
-        <div>
-          <label className="text-sm font-semibold text-gray-500">Status</label>
-          <p>
-            <span className={`text-sm font-bold uppercase px-2 py-1 rounded-full ${
-              issue.status === 'new' ? 'bg-blue-100 text-blue-800' : 
-              issue.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
-            }`}>
-              {issue.status}
-            </span>
-          </p>
-        </div>
-        <div>
-          <label className="text-sm font-semibold text-gray-500">Category</label>
-          <p className="text-gray-800">{issue.category || 'N/A'}</p>
-        </div>
-        {issue.image_url && (
+        
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-semibold text-gray-500">Attachment</label>
-            <img src={issue.image_url} alt={`Issue ${issue.id}`} className="mt-2 rounded-lg w-full h-auto object-cover" />
+            <label className="text-sm font-semibold text-gray-500">Status</label>
+            <p>
+              <span className={`text-sm font-bold uppercase px-2 py-1 rounded-full ${
+                issue.status === 'new' ? 'bg-blue-100 text-blue-800' : 
+                issue.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' : 
+                issue.status === 'resolved' ? 'bg-green-100 text-green-800' :
+                issue.status === 'spam' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
+              }`}>
+                {issue.status}
+              </span>
+            </p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Priority</label>
+            <p className="text-gray-800">{issue.priority || 'N/A'}</p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Category</label>
+            <p className="text-gray-800">{issue.category || 'N/A'}</p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Department</label>
+            <p className="text-gray-800">{issue.assigned_department || 'N/A'}</p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Reporter</label>
+            <p className="text-gray-800">{issue.reporter_name || 'Anonymous'}</p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Assigned Admin</label>
+            <p className="text-gray-800">{issue.assigned_admin_name || 'Not assigned'}</p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Upvotes</label>
+            <p className="text-gray-800">{issue.upvote_count || 0}</p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Location</label>
+            <p className="text-gray-800">{issue.lat?.toFixed(4)}, {issue.lng?.toFixed(4)}</p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Reported</label>
+            <p className="text-gray-800">{new Date(issue.created_at).toLocaleString()}</p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Verified</label>
+            <p className="text-gray-800">
+              <span className={`text-sm font-bold px-2 py-1 rounded-full ${
+                issue.is_verified ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              }`}>
+                {issue.is_verified ? 'Verified' : 'Not Verified'}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {issue.address_line1 && (
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Address</label>
+            <p className="text-gray-800">
+              {issue.address_line1}
+              {issue.address_line2 && `, ${issue.address_line2}`}
+              {issue.street && `, ${issue.street}`}
+              {issue.landmark && ` (${issue.landmark})`}
+              {issue.pincode && ` - ${issue.pincode}`}
+            </p>
           </div>
         )}
 
-        <div className="border-t pt-4">
-          <label className="text-sm font-semibold text-gray-500 mb-2 block">Actions</label>
-          <div className="flex gap-2">
-            <Button 
-              size="sm" 
-              onClick={() => handleUpdateStatus('in_progress')}
-              disabled={isUpdating || issue.status === 'in_progress'}
-            >
-              Mark In Progress
-            </Button>
-            <Button 
-              size="sm" 
-              variant="destructive"
-              onClick={() => handleUpdateStatus('resolved')}
-              disabled={isUpdating || issue.status === 'resolved'}
-            >
-              Mark Resolved
-            </Button>
+        {issue.media_urls && issue.media_urls.length > 0 && (
+          <div>
+            <label className="text-sm font-semibold text-gray-500">Media Files</label>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {issue.media_urls.map((url, index) => (
+                <div key={index} className="relative">
+                  <img 
+                    src={url} 
+                    alt={`Media ${index + 1}`}
+                    className="w-full h-32 object-cover rounded border"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  />
+                  <div 
+                    className="w-full h-32 bg-gray-100 rounded border flex items-center justify-center text-gray-500 text-sm"
+                    style={{ display: 'none' }}
+                  >
+                    Failed to load
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          {isUpdating && <p className="text-sm text-gray-500 mt-2">Updating status...</p>}
-        </div>
+        )}
+
+
       </div>
     </div>
   );

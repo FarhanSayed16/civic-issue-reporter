@@ -1,5 +1,5 @@
 // src/pages/Login.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLoginMutation } from '../features/api/auth.api';
 import { encryptJson, packPasswordB64 } from '../lib/crypto';
@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux';
 import { setCredentials, logout} from '../features/auth/authSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { useHCaptcha } from '../hooks/useHCaptcha';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -16,17 +18,36 @@ const Login = () => {
   const dispatch = useDispatch(); 
   const [serverError, setServerError] = useState('');
   const location = useLocation();
+  const { siteKey, loading: hcaptchaLoading } = useHCaptcha();
+  const hcaptchaRef = useRef(null);
+  const [hcaptchaToken, setHcaptchaToken] = useState(null);
+  
   console.log("Login page `from` state:", location.state);
 
   const from = location.state?.from || '/login';
 
   const onSubmit = async (data) => {
     setServerError(''); // Clear previous errors
+    
+    // Check if hCaptcha is verified
+    if (!hcaptchaToken) {
+      setServerError('Please complete the hCaptcha verification');
+      return;
+    }
+    
     try {
-      // Our backend expects { phone_number, password: base64(nonce||ciphertext) }
-      const enc = await encryptJson({ secret: data.password });
-      const packedPassword = packPasswordB64(enc.nonce, enc.ciphertext);
-      const payload = { phone_number: data.username, password: packedPassword };
+      // Encrypt both password and phone number
+      const encPassword = await encryptJson({ secret: data.password });
+      const packedPassword = packPasswordB64(encPassword.nonce, encPassword.ciphertext);
+      
+      const encPhone = await encryptJson({ secret: data.username });
+      const packedPhone = packPasswordB64(encPhone.nonce, encPhone.ciphertext);
+      
+      const payload = { 
+        phone_number: packedPhone, 
+        password: packedPassword,
+        hcaptcha_token: hcaptchaToken
+      };
       const response = await login(payload).unwrap();
       // Backend returns { access_token, refresh_token, token_type }
       dispatch(setCredentials(response));
@@ -35,6 +56,11 @@ const Login = () => {
     } catch (err) {
       setServerError(err?.data?.detail || 'Login failed. Please check your credentials.');
       dispatch(logout()); // Ensure user is logged out on failed login
+      // Reset hCaptcha on error
+      if (hcaptchaRef.current) {
+        hcaptchaRef.current.resetCaptcha();
+        setHcaptchaToken(null);
+      }
     }
   };
 
@@ -90,6 +116,19 @@ const Login = () => {
               <p className="text-red-500 text-sm mt-2">{errors.password.message}</p>
             )}
           </div>
+
+          {/* hCaptcha */}
+          {siteKey && !hcaptchaLoading && (
+            <div className="flex justify-center">
+              <HCaptcha
+                ref={hcaptchaRef}
+                sitekey={siteKey}
+                onVerify={setHcaptchaToken}
+                onError={() => setHcaptchaToken(null)}
+                onExpire={() => setHcaptchaToken(null)}
+              />
+            </div>
+          )}
 
           <button
             type="submit"

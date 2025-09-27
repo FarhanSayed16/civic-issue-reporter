@@ -12,8 +12,11 @@ import {
 import { NotFound } from './components';
 import { IssueDetailsPanel } from './components/IssueDetailsPanel';
 import AllIssuesPage from './pages/AllIssuesPage';
+import AllIssuesAdminPage from './pages/AllIssuesAdminPage';
 import ReportsPage from './pages/ReportsPage';
 import HelpSettingsPage from './pages/HelpSettingsPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import UserDashboardPage from './pages/UserDashboardPage';
 
 export default createBrowserRouter(
   createRoutesFromElements(
@@ -43,7 +46,7 @@ export default createBrowserRouter(
       <Route
         path="/home"
         element={
-          <AuthLayout authentication={true}>
+          <AuthLayout authentication={true} roles={['admin']}>
             <HomePage />
           </AuthLayout>
         }
@@ -53,27 +56,35 @@ export default createBrowserRouter(
       <Route
         path="issues"
         element={
-          <AuthLayout authentication={true}>
-            <AllIssuesPage />
-          </AuthLayout>
-        }
-      />
-      <Route
-        path="reports"
-        element={
-          <AuthLayout authentication={true}>
-            <ReportsPage />
+          <AuthLayout authentication={true} roles={['admin']}>
+            <AllIssuesAdminPage />
           </AuthLayout>
         }
       />
       <Route
         path="help-settings"
         element={
-          <AuthLayout authentication={true}>
+          <AuthLayout authentication={true} roles={['admin']}>
             <HelpSettingsPage />
           </AuthLayout>
         }
       />
+        <Route
+          path="admin"
+          element={
+            <AuthLayout authentication={true} roles={['admin']}>
+              <AdminDashboardPage />
+            </AuthLayout>
+          }
+        />
+        <Route
+          path="my-issues"
+          element={
+            <AuthLayout authentication={true} roles={['admin']}>
+              <UserDashboardPage />
+            </AuthLayout>
+          }
+        />
   
       <Route
         path="profile"

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGetStatsQuery, useGetHeatmapDataQuery } from '@/features/api/analytics.api';
+import { useGetAnalyticsStatsQuery, useGetAnalyticsHeatmapQuery } from '@/features/api';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -41,8 +41,8 @@ export default function ReportsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
 
-  const { data: stats, isLoading: isLoadingStats } = useGetStatsQuery();
-  const { data: heatmapData, isLoading: isLoadingHeatmap } = useGetHeatmapDataQuery({
+  const { data: stats, isLoading: isLoadingStats } = useGetAnalyticsStatsQuery();
+  const { data: heatmapData, isLoading: isLoadingHeatmap } = useGetAnalyticsHeatmapQuery({
     status: statusFilter || undefined,
     category: categoryFilter || undefined,
   });
