@@ -6,21 +6,10 @@ __pycache__/
 civic_issue_backend/.venv/
 civic_issue_backend/.env
 civic_issue_backend/nginx_logs/
-civic_issue_backend/nginx/
-civic_issue_reporter/.env
-frontend/apps/web/.env
 frontend/apps/web/node_modules/
-frontend/apps/mobile/.env
-frontend/apps/mobile/node_modules/
-frontend/apps/mobile/dart_tool/
 frontend/apps/mobile/.dart_tool/
 frontend/apps/mobile/build/
-frontend/apps/mobile/.idea/
-frontend/apps/mobile/.vscode/
-frontend/apps/mobile/.packages
-frontend/apps/mobile/.flutter-plugins
-frontend/apps/mobile/.flutter-plugins-dependencies
-frontend/apps/mobile/.metadata
-frontend/apps/mobile/.fvm/
-frontend/apps/mobile/fvm_config.json
+
+
+
 
