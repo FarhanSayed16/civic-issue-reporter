@@ -1,6 +1,14 @@
 import os
 from pydantic import BaseSettings
-from dotenv import load_dotenv
+
+# Optional dotenv import - not required if .env file is not used
+try:
+    from dotenv import load_dotenv
+    DOTENV_AVAILABLE = True
+except ImportError:
+    DOTENV_AVAILABLE = False
+    def load_dotenv(path):
+        pass  # No-op if dotenv is not installed
 
 # Load environment variables from .env file
 # Get the directory where this config.py file is located
@@ -9,8 +17,9 @@ config_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(config_dir))
 env_path = os.path.join(project_root, '.env')
 
-# Load the .env file from the project root
-load_dotenv(env_path)
+# Load the .env file from the project root (if dotenv is available)
+if DOTENV_AVAILABLE:
+    load_dotenv(env_path)
 
 def get_obfuscated_encryption_key():
     """Get the obfuscated encryption key"""
