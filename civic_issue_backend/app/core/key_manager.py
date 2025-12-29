@@ -1,0 +1,43 @@
+# Obfuscated Encryption Key Implementation
+# This file contains obfuscated functions to hide the encryption key and AAD
+
+def get_encryption_data():
+    """Returns obfuscated encryption key data"""
+    chars = [46, 58, 65, 50, 15, 13, 75, 78, 65, 40, 44, 61, 46, 10, 60, 78, 44, 83, 30, 60, 26, 87, 30, 43, 53, 78, 75, 40, 87, 15, 23, 75, 77, 1, 76, 79, 53, 16, 11, 29, 41, 59, 11, 69]
+    xor_key = 120
+    return chars, xor_key
+
+def get_encryption_key():
+    """Returns the decrypted encryption key"""
+    chars, xor_key = get_encryption_data()
+    return "".join([chr(c ^ xor_key) for c in chars])
+
+def get_aad_data():
+    """Returns obfuscated AAD data"""
+    chars = [249, 249, 178, 214, 250, 211, 180, 244, 231, 211, 204, 242, 234, 194, 228, 178, 238, 183, 219, 193, 182, 244, 190, 190]
+    xor_key = 131
+    return chars, xor_key
+
+def get_aad_string():
+    """Returns the decrypted AAD string"""
+    chars, xor_key = get_aad_data()
+    return "".join([chr(c ^ xor_key) for c in chars])
+
+# Dummy functions to confuse reverse engineering
+def get_dummy_key_1():
+    return "dummy_key_1_not_real"
+
+def get_dummy_key_2():
+    return "dummy_key_2_not_real"
+
+def get_dummy_key_3():
+    return "dummy_key_3_not_real"
+
+def calculate_hash():
+    """Dummy function"""
+    return "hash_not_real"
+
+def validate_key():
+    """Dummy function"""
+    return True
+
