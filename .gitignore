@@ -9,6 +9,9 @@ civic_issue_backend/nginx_logs/
 frontend/apps/web/node_modules/
 frontend/apps/mobile/.dart_tool/
 frontend/apps/mobile/build/
+.venv
+
+
 
 
 
