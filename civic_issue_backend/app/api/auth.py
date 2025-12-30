@@ -7,10 +7,12 @@ from app.schemas.user import UserOut
 from app.services.auth_service import AuthService
 from app.services.hcaptcha_service import HCaptchaService
 from app.core.db import get_db
+from app.core.rate_limiter import limiter
 
 router = APIRouter()
 
 @router.post("/register", response_model=UserOut)
+@limiter.limit("10/minute")  # Rate limit: 10 registrations per minute
 async def register(data: dict, request: Request, db: Session = Depends(get_db)):
     # Accept packed format like login: { full_name, phone_number, password: base64(nonce||ciphertext), fp_check: base64(nonce||ciphertext) }
     if 'password' in data and 'phone_number' in data and 'full_name' in data:
@@ -116,6 +118,7 @@ async def register(data: dict, request: Request, db: Session = Depends(get_db)):
             return user
 
 @router.post("/login", response_model=Token)
+@limiter.limit("10/minute")  # Rate limit: 10 login attempts per minute (prevent brute force)
 async def login(data: dict, request: Request, db: Session = Depends(get_db)):
     # Support three forms:
     # 1) Fully encrypted: {nonce,ciphertext} -> {username/password} or {phone_number/secret}
@@ -153,6 +156,7 @@ async def login(data: dict, request: Request, db: Session = Depends(get_db)):
         phone_value = data['phone_number']
         
         # Try to detect if password is encrypted
+        password = None
         try:
             if len(password_value) > 20 and password_value.replace('+', '').replace('/', '').replace('=', '').isalnum():
                 # Password appears to be encrypted (packed base64)
@@ -172,11 +176,16 @@ async def login(data: dict, request: Request, db: Session = Depends(get_db)):
             else:
                 # Password is plain text
                 password = password_value
-        except Exception:
-            # If decryption fails, treat as plain text
-            password = password_value
+        except Exception as e:
+            # If decryption fails, log error and reject
+            print(f"[login] Password decryption failed: {e}")
+            raise HTTPException(status_code=400, detail="Invalid encrypted password format")
+        
+        if not password:
+            raise HTTPException(status_code=400, detail="Password is required")
         
         # Check if phone_number is also encrypted
+        phone_number = None
         try:
             if len(phone_value) > 20 and phone_value.replace('+', '').replace('/', '').replace('=', '').isalnum():
                 # Phone number is encrypted
@@ -195,12 +204,28 @@ async def login(data: dict, request: Request, db: Session = Depends(get_db)):
             else:
                 # Phone number is plain text
                 phone_number = phone_value
-        except Exception:
-            # If phone decryption fails, treat as plain text
+        except Exception as e:
+            # If phone decryption fails, log and use as-is (might be plain text)
+            print(f"[login] Phone decryption failed, using as plain text: {e}")
             phone_number = phone_value
+        
+        if not phone_number:
+            raise HTTPException(status_code=400, detail="Phone number is required")
             
+        # Ensure password is properly decrypted and is a string
+        if not isinstance(password, str):
+            password = str(password)
+        
+        # Ensure password is not too long (bcrypt limit is 72 bytes)
+        password_bytes = password.encode('utf-8')
+        if len(password_bytes) > 72:
+            # If password is still too long after decryption, something is wrong
+            # Log for debugging but truncate to prevent error
+            print(f"Warning: Password length {len(password_bytes)} exceeds bcrypt limit, truncating")
+            password = password_bytes[:72].decode('utf-8', errors='ignore')
+        
         try:
-            print("[login] Password:", password)
+            print("[login] Password length:", len(password.encode('utf-8')), "bytes")
             print("[login] Phone number:", phone_number)
         except Exception:
             pass
@@ -246,7 +271,11 @@ async def login_plain(data: dict, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=f"Login error: {str(e)}")
 
 @router.post("/refresh", response_model=Token)
-def refresh(token: dict):
+def refresh(data: dict = None):
+    """Refresh token endpoint - placeholder implementation"""
+    # TODO: Implement proper token refresh logic
+    if not data or "refresh_token" not in data:
+        raise HTTPException(status_code=422, detail="refresh_token is required")
     return {"access_token": "refreshed-access-token", "refresh_token": "refreshed-refresh-token", "token_type": "bearer"}
 
 @router.get("/hcaptcha/site-key")

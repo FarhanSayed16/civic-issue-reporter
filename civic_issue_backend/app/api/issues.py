@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from fastapi import UploadFile, File, Body
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -7,6 +7,7 @@ from app.services.issue_service import IssueService
 from app.services.storage_service import StorageService
 from app.core.security import get_current_user
 from app.core.db import get_db
+from app.core.rate_limiter import limiter
 from typing import List, Optional
 
 router = APIRouter()
@@ -27,7 +28,8 @@ async def upload_file_local(filename: str, file: bytes = Body(...)):
     raise HTTPException(status_code=400, detail="Local uploads are disabled. Use presigned S3/MinIO uploads.")
 
 @router.post("", response_model=IssueOut)
-def create_issue(payload: IssueCreate, current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("20/minute")  # Rate limit: 20 issue creations per minute per user
+def create_issue(payload: IssueCreate, request: Request, current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     """Step 2: Create issue after photo upload"""
     # Set reporter_id from current user
     payload.reporter_id = current_user["id"]
