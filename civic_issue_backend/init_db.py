@@ -69,41 +69,41 @@ def init_database():
                 profile_picture_url=random.choice(PROFILE_PICTURES)
             ),
             User(
-                full_name="Road Department Head",
+                full_name="Solid Waste Management Head",
                 phone_number="9876543211",
                 password_hash=pwd_ctx.hash("admin123"),
                 role="admin",
-                department="Road Maintenance Department",
+                department="Solid Waste Management",
                 ward="Ward 2",
                 trust_score=100.0,
                 profile_picture_url=random.choice(PROFILE_PICTURES)
             ),
             User(
-                full_name="Water Department Head",
+                full_name="Water Quality Department Head",
                 phone_number="9876543212",
                 password_hash=pwd_ctx.hash("admin123"),
                 role="admin",
-                department="Water Department",
+                department="Water Quality Department",
                 ward="Ward 3",
                 trust_score=100.0,
                 profile_picture_url=random.choice(PROFILE_PICTURES)
             ),
             User(
-                full_name="Waste Management Head",
+                full_name="Pollution Control Board Head",
                 phone_number="9876543213",
                 password_hash=pwd_ctx.hash("admin123"),
                 role="admin",
-                department="Waste Management Department",
+                department="Pollution Control Board",
                 ward="Ward 4",
                 trust_score=100.0,
                 profile_picture_url=random.choice(PROFILE_PICTURES)
             ),
             User(
-                full_name="Traffic Department Head",
+                full_name="Municipal Waste Collection Head",
                 phone_number="9876543214",
                 password_hash=pwd_ctx.hash("admin123"),
                 role="admin",
-                department="Traffic Department",
+                department="Municipal Waste Collection",
                 ward="Ward 5",
                 trust_score=100.0,
                 profile_picture_url=random.choice(PROFILE_PICTURES)
@@ -156,9 +156,9 @@ def init_database():
             db.commit()
         
         print("Adding sample issues...")
-        # Create comprehensive issues with proper categorization
-        categories = ["Potholes", "Road Cracks", "Manholes", "Stagnant Water", "Damaged Signboards", "Garbage Overflow", "Trash", "Street Lights", "Sewer Blockage", "Water Leakage"]
-        departments = ["Road Maintenance Department", "Sewer Department", "Water Department", "Traffic Department", "Waste Management Department", "Electrical Department"]
+        # Create comprehensive issues with proper environmental categorization
+        categories = ["Open Garbage Dump", "Plastic Pollution", "Open Burning", "Water Body Pollution", "Construction Waste", "Electronic Waste (E-Waste)", "Biomedical Waste", "Green Space Degradation", "Drainage Blockage", "Water Pollution / Contaminated Water", "Garbage Overflow", "Illegal Dumping / Litter"]
+        departments = ["Solid Waste Management", "Water Quality Department", "Pollution Control Board", "Municipal Waste Collection", "Sanitation Department", "Hazardous Waste Management", "Green Space Management", "Waste Water Management", "Environmental Authority"]
         statuses = ["new", "in_progress", "resolved"]
         priorities = ["high", "medium", "low"]
         
@@ -177,18 +177,20 @@ def init_database():
             {"line1": "258 Worli Sea Face", "line2": "Worli", "street": "Sea Face", "landmark": "Near Worli Fort", "pincode": "400018"}
         ]
         
-        # Global issues descriptions
+        # Global environmental issues descriptions
         global_issues = [
-            "Large pothole causing traffic congestion and vehicle damage. Multiple complaints received from residents.",
-            "Severe road crack extending across the entire width of the road. Safety hazard for vehicles.",
-            "Manhole cover missing, creating a dangerous open pit. Immediate attention required.",
-            "Stagnant water accumulating for over a week, breeding mosquitoes and causing health concerns.",
-            "Damaged traffic signboard causing confusion among drivers. Needs immediate replacement.",
+            "Large open garbage dump site with waste accumulating for weeks, causing foul smell and health hazards.",
+            "Plastic pollution covering the area, with plastic bags and bottles scattered everywhere.",
+            "Open burning of waste causing toxic smoke and air pollution affecting nearby residents.",
+            "Water body pollution in local pond/lake with contaminated water and visible waste floating.",
+            "Construction waste illegally dumped blocking pedestrian walkway and causing safety concerns.",
+            "Electronic waste (old batteries, phones) improperly disposed in public area, environmental hazard.",
+            "Biomedical waste including used syringes and medical items found in public space, serious health risk.",
+            "Green space degradation with trees cut down and land cleared, affecting local ecosystem.",
+            "Drainage blockage causing waterlogging and stagnant water, breeding mosquitoes.",
+            "Water pollution from contaminated sources, foul smell and health concerns for nearby residents.",
             "Garbage overflow from municipal bins, spreading waste on the street and causing foul smell.",
-            "Large pile of construction debris blocking pedestrian walkway. Safety hazard for pedestrians.",
-            "Street light not working for the past 3 days, making the area unsafe at night.",
-            "Sewer blockage causing water backup and foul smell in the area.",
-            "Water leakage from municipal pipeline, wasting water and causing road damage."
+            "Illegal dumping of waste and litter on roadside, creating unsanitary conditions."
         ]
         
         issues = []
@@ -210,37 +212,47 @@ def init_database():
             # Select random address
             address = random.choice(sample_addresses)
             
-            # Map category to department
+            # Map category to environmental department
             category = random.choice(categories)
-            if category in ["Potholes", "Road Cracks"]:
-                department = "Road Maintenance Department"
-            elif category in ["Manholes", "Sewer Blockage"]:
-                department = "Sewer Department"
-            elif category in ["Stagnant Water", "Water Leakage"]:
-                department = "Water Department"
-            elif category in ["Damaged Signboards"]:
-                department = "Traffic Department"
-            elif category in ["Garbage Overflow", "Trash"]:
-                department = "Waste Management Department"
-            elif category in ["Street Lights"]:
-                department = "Electrical Department"
+            if category in ["Open Garbage Dump", "Construction Waste"]:
+                department = "Municipal Waste Collection"
+            elif category in ["Plastic Pollution", "Open Burning", "Water Body Pollution"]:
+                department = "Pollution Control Board"
+            elif category in ["Electronic Waste (E-Waste)", "Biomedical Waste"]:
+                department = "Hazardous Waste Management"
+            elif category in ["Green Space Degradation"]:
+                department = "Green Space Management"
+            elif category in ["Drainage Blockage"]:
+                department = "Waste Water Management"
+            elif category in ["Water Pollution / Contaminated Water"]:
+                department = "Water Quality Department"
+            elif category in ["Garbage Overflow"]:
+                department = "Solid Waste Management"
+            elif category in ["Illegal Dumping / Litter"]:
+                department = "Sanitation Department"
             else:
-                department = "Road Maintenance Department"
+                department = "Environmental Authority"
             
-            # Assign admin based on department
+            # Assign admin based on environmental department
             assigned_admin_id = None
-            if department == "Road Maintenance Department":
+            if department == "Solid Waste Management":
                 assigned_admin_id = 2
-            elif department == "Water Department":
+            elif department == "Water Quality Department":
                 assigned_admin_id = 3
-            elif department == "Waste Management Department":
+            elif department == "Pollution Control Board":
                 assigned_admin_id = 4
-            elif department == "Traffic Department":
+            elif department == "Municipal Waste Collection":
                 assigned_admin_id = 5
-            elif department == "Sewer Department":
-                assigned_admin_id = 2  # Road admin handles sewer too
-            elif department == "Electrical Department":
-                assigned_admin_id = 1  # Municipal commissioner handles electrical
+            elif department == "Sanitation Department":
+                assigned_admin_id = 2  # Solid waste admin handles sanitation
+            elif department == "Hazardous Waste Management":
+                assigned_admin_id = 4  # Pollution control handles hazardous waste
+            elif department == "Green Space Management":
+                assigned_admin_id = 3  # Water quality handles green spaces
+            elif department == "Waste Water Management":
+                assigned_admin_id = 3  # Water quality handles waste water
+            elif department == "Environmental Authority":
+                assigned_admin_id = 1  # Municipal commissioner handles general
             
             issue = Issue(
                 reporter_id=random.choice(citizen_ids),
