@@ -43,7 +43,7 @@ class AIService:
     # Image Recognition (YOLO)
     # -----------------------
     def detect_issue_from_image(self, image_path_or_url: str) -> List[DetectionResult]:
-        """Run YOLO inference to detect civic issue classes and return labels with confidences.
+        """Run YOLO inference to detect environmental issue classes and return labels with confidences.
 
         Accepts local paths or URLs supported by the YOLO loader.
         """
@@ -87,12 +87,14 @@ class AIService:
     def analyze_text(self, text: str) -> Dict[str, Any]:
         text_l = (text or "").lower()
         keywords = {
-            "pothole": ["pothole", "hole", "road broken", "road damage"],
-            "manhole": ["manhole"],
-            "streetlight": ["streetlight", "light", "lamp"],
-            "garbage": ["garbage", "trash", "dump", "waste"],
-            "waterlogging": ["waterlogging", "flood", "water log", "sewage"],
-            "traffic": ["traffic", "jam", "congestion"],
+            "garbage": ["garbage", "trash", "dump", "waste", "rubbish", "litter"],
+            "plastic_pollution": ["plastic", "plastic waste", "plastic pollution", "plastic bags"],
+            "open_burning": ["burning", "waste burning", "garbage burning", "smoke", "fire"],
+            "water_pollution": ["water pollution", "contaminated water", "stagnant water", "sewage", "waterlogging"],
+            "construction_waste": ["construction waste", "construction debris", "demolition waste"],
+            "e_waste": ["e-waste", "electronic waste", "battery waste", "electronic debris"],
+            "biomedical_waste": ["biomedical waste", "medical waste", "syringe", "hospital waste"],
+            "drainage_blockage": ["drainage", "blocked drain", "drain blocked", "waterlogging"],
         }
         matched: List[str] = []
         for label, terms in keywords.items():
@@ -108,14 +110,16 @@ class AIService:
         if detections:
             base = max(base, min(1.0, detections[0].confidence))
             label = detections[0].label.lower()
-            if label in {"pothole", "manhole"}:
+            if label in {"garbage", "waste", "dump", "trash", "litter"}:
                 base = min(1.0, base + 0.3)
-            if label in {"waterlogging"}:
+            if label in {"biomedical_waste", "e_waste", "hazardous", "toxic"}:
+                base = min(1.0, base + 0.4)  # Higher severity for hazardous waste
+            if label in {"waterlogging", "water_pollution", "contaminated", "sewage"}:
                 base = min(1.0, base + 0.2)
         text_l = (text or "").lower()
-        if any(k in text_l for k in ["busy road", "highway", "school", "hospital"]):
+        if any(k in text_l for k in ["public area", "residential", "school", "hospital", "park"]):
             base = min(1.0, base + 0.2)
-        if any(k in text_l for k in ["huge", "massive", "very large", "danger"]):
+        if any(k in text_l for k in ["huge", "massive", "very large", "danger", "toxic", "hazardous"]):
             base = min(1.0, base + 0.2)
         level = "low"
         if base >= 0.75:
