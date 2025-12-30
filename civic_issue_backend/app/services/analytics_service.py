@@ -11,7 +11,7 @@ class AnalyticsService:
         self.db = db
 
     def get_stats(self, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None, department: Optional[str] = None):
-        """Get key KPI numbers for dashboard header"""
+        """Get key environmental KPI numbers for dashboard header"""
         query = self.db.query(Issue)
         
         # Filter by department if provided
@@ -76,7 +76,7 @@ class AnalyticsService:
         )
     
     def get_heatmap_data(self, status: Optional[str] = None, category: Optional[str] = None, department: Optional[str] = None):
-        """Get issue coordinates for heatmap visualization"""
+        """Get environmental issue coordinates for pollution/waste heatmap visualization"""
         query = self.db.query(Issue)
         
         # Apply filters
