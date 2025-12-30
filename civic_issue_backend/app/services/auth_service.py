@@ -61,18 +61,41 @@ class AuthService:
 
     def authenticate_user(self, username, password):
         user = self.db.query(User).filter(User.phone_number == username).first()
-        if user and pwd_ctx.verify(password, user.password_hash):
-            access_token = jwt.encode(
-                {"sub": str(user.id), "exp": datetime.utcnow() + timedelta(minutes=60)}, 
-                settings.SECRET_KEY, 
-                algorithm=settings.ALGORITHM
-            )
-            refresh_token = jwt.encode(
-                {"sub": str(user.id), "exp": datetime.utcnow() + timedelta(days=7)}, 
-                settings.SECRET_KEY, 
-                algorithm=settings.ALGORITHM
-            )
-            return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+        if not user:
+            return None
+        
+        # Ensure password is a string and not too long for bcrypt (72 byte limit)
+        if isinstance(password, bytes):
+            password = password.decode('utf-8', errors='ignore')
+        password_str = str(password)
+        
+        # Bcrypt has a 72-byte limit, truncate if necessary
+        # Convert to bytes to check length, then truncate
+        password_bytes = password_str.encode('utf-8')
+        if len(password_bytes) > 72:
+            password_str = password_bytes[:72].decode('utf-8', errors='ignore')
+        
+        try:
+            if pwd_ctx.verify(password_str, user.password_hash):
+                access_token = jwt.encode(
+                    {"sub": str(user.id), "exp": datetime.utcnow() + timedelta(minutes=60)}, 
+                    settings.SECRET_KEY, 
+                    algorithm=settings.ALGORITHM
+                )
+                refresh_token = jwt.encode(
+                    {"sub": str(user.id), "exp": datetime.utcnow() + timedelta(days=7)}, 
+                    settings.SECRET_KEY, 
+                    algorithm=settings.ALGORITHM
+                )
+                return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+        except ValueError as e:
+            # Handle bcrypt errors gracefully
+            print(f"Password verification error: {e}")
+            return None
+        except Exception as e:
+            print(f"Authentication error: {e}")
+            return None
+        
         return None
 
     def get_user(self, user_id: int):
