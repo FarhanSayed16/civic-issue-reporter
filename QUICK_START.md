@@ -1,111 +1,70 @@
-# 🚀 Quick Start Guide - Civic Issue Reporter
+# ⚡ SwachhCity - Quick Start (5 Minutes)
 
-## ⚡ Fast Setup (5 Minutes)
+**For complete setup, see [SETUP_GUIDE.md](./SETUP_GUIDE.md)**
 
-### 1. Backend Setup
+---
 
+## 🚀 Quick Commands
+
+### Backend
 ```bash
-# Navigate to backend
 cd civic_issue_backend
-
-# Create virtual environment (optional but recommended)
-python -m venv venv
-# Windows: venv\Scripts\activate
-# Linux/Mac: source venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Initialize database
 python init_db.py
-
-# Start server
 python start.py
 ```
+✅ Backend: http://localhost:8585
 
-✅ Backend running at: `http://localhost:8585`
-- API Docs: `http://localhost:8585/docs`
-- Frontend: `http://localhost:8585/frontend`
-
-### 2. Frontend Web Setup (Optional)
-
+### Frontend Web
 ```bash
-# Navigate to frontend
 cd frontend/apps/web
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
+✅ Web: http://localhost:5173
 
-✅ Frontend running at: `http://localhost:5173`
-
----
-
-## 🔑 Quick Login
-
-### Admin Login
-- **Phone:** `9876543210`
-- **Password:** `admin123`
-
-### Citizen Login
-- **Phone:** `9876543215`
-- **Password:** `password123`
+### Mobile App
+```bash
+cd frontend/apps/mobile
+flutter pub get
+flutter run
+```
 
 ---
 
-## 📋 What's Included
+## 🔑 Demo Credentials
 
-✅ **5 Admin Accounts** (different departments)
-✅ **5 Citizen Accounts**
-✅ **50 Sample Issues** (various categories and statuses)
-✅ **Sample Upvotes** and interactions
-✅ **Complete API** with documentation
-✅ **Web Interface** at `/frontend`
-✅ **Real-time Updates** via WebSocket
+**Admin:** Phone `9876543212` | Password `admin123`  
+**Citizen:** Phone `9876543219` | Password `password123`
 
 ---
 
-## 🎯 Next Steps
+## 📍 Access Points
 
-1. **Login** with demo credentials
-2. **Report an Issue** - Upload photo, add location
-3. **View Issues** - Browse and filter issues
-4. **Admin Dashboard** - Manage issues and view analytics
-5. **Explore API** - Visit `/docs` for interactive API docs
+- **Web Dashboard:** http://localhost:5173
+- **API Docs:** http://localhost:8585/docs
+- **Health Check:** http://localhost:8585/
 
 ---
 
 ## ⚠️ Troubleshooting
 
-**Port already in use?**
-```bash
-# Use different port
-uvicorn app.main:app --reload --port 8586
-```
+**Backend not starting?**
+- Check Python 3.8+ installed
+- Activate virtual environment
+- Install dependencies: `pip install -r requirements.txt`
 
-**Database errors?**
-```bash
-# Reinitialize database
-rm civic_issues.db
-python init_db.py
-```
+**Frontend not loading?**
+- Check Node.js 16+ installed
+- Delete `node_modules`, run `npm install`
+- Check backend is running
 
-**Module not found?**
-```bash
-# Reinstall dependencies
-pip install -r requirements.txt
-```
+**Mobile app errors?**
+- Check Flutter 3.6+ installed
+- Run `flutter clean && flutter pub get`
+- For API connection: Use `10.0.2.2:8585` (Android) or your computer's IP
 
 ---
 
-## 📚 Full Documentation
-
-For complete setup instructions, see [COMPLETE_SETUP_GUIDE.md](./COMPLETE_SETUP_GUIDE.md)
-
----
-
-**That's it! You're ready to go! 🎉**
+**Full Guide:** [SETUP_GUIDE.md](./SETUP_GUIDE.md)
 

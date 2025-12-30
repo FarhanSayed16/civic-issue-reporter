@@ -1,6 +1,6 @@
-# 🏛️ Civic Issue Reporter
+# 🌱 SwachhCity - Environmental & Waste Monitoring Platform
 
-A comprehensive full-stack platform for reporting and managing civic issues with AI-powered detection, real-time updates, and advanced analytics.
+A comprehensive full-stack platform for monitoring environmental health, reporting waste and pollution issues, and tracking cleanup progress with AI-powered detection, real-time updates, and advanced analytics.
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.95.2-green.svg)
@@ -9,20 +9,22 @@ A comprehensive full-stack platform for reporting and managing civic issues with
 
 ## 📖 Overview
 
-**Civic Issue Reporter** enables citizens to report civic issues (potholes, streetlights, garbage, water issues, etc.) with photos and location data. Administrators can efficiently manage, track, and resolve these issues through a powerful dashboard with analytics and real-time updates.
+**SwachhCity** enables citizens to report environmental issues (waste dumps, pollution, water contamination, illegal dumping, etc.) with photos and location data. Environmental authorities can efficiently monitor, prioritize, and track cleanup progress through a powerful dashboard with analytics and real-time updates.
 
 ### ✨ Key Features
 
 - 🔐 **Secure Authentication** - JWT-based with encrypted payloads
 - 📸 **Photo Upload** - Direct-to-storage uploads with presigned URLs
-- 🗺️ **Location Services** - GPS-based issue reporting and discovery
-- 🤖 **AI Detection** - YOLO model for automatic issue detection
+- 🗺️ **Location Services** - GPS-based environmental issue reporting and hotspot mapping
+- 🤖 **AI Detection** - YOLO model for automatic environmental issue detection (waste, pollution, etc.)
 - 💬 **Real-time Updates** - WebSocket notifications and chat
-- 📊 **Analytics Dashboard** - KPIs, heatmaps, and insights
-- 👥 **Trust Score System** - User reputation tracking
+- 📊 **Analytics Dashboard** - Environmental KPIs, pollution heatmaps, and cleanup insights
+- 🌿 **Eco-Score System** - User contribution tracking for environmental monitoring
 - 📱 **Multi-platform** - Web and mobile applications
 
 ## 🚀 Quick Start
+
+> **📖 For complete setup instructions, see [SETUP_GUIDE.md](./SETUP_GUIDE.md)**
 
 ### Prerequisites
 
@@ -51,6 +53,14 @@ npm run dev
 
 ✅ Frontend running at `http://localhost:5173`
 
+### Mobile App Setup
+
+```bash
+cd frontend/apps/mobile
+flutter pub get
+flutter run
+```
+
 ### Demo Credentials
 
 **Admin:**
@@ -61,9 +71,16 @@ npm run dev
 
 ## 📚 Documentation
 
-- **[Quick Start Guide](./QUICK_START.md)** - Get up and running in 5 minutes
-- **[Complete Setup Guide](./COMPLETE_SETUP_GUIDE.md)** - Comprehensive documentation
+- **[🚀 Complete Setup Guide](./SETUP_GUIDE.md)** - **START HERE!** Complete step-by-step setup instructions
+- **[📖 Project Overview](./docs/overview/PROJECT_OVERVIEW.md)** - Complete project overview and architecture
+- **[⚙️ Quick Start Guide](./docs/setup/QUICK_START.md)** - Get up and running in 5 minutes
+- **[✨ Web Dashboard Docs](./docs/features/WEB_DASHBOARD_COMPLETE_DOCUMENTATION.md)** - Complete web dashboard documentation
+- **[✨ Mobile App Docs](./docs/features/MOBILE_APP_COMPLETE_DOCUMENTATION.md)** - Complete mobile app documentation
+- **[🔧 Troubleshooting & Fixes](./docs/fixes/)** - Common issues and solutions
+- **[💻 API Reference](./docs/development/apiEndPoints.md)** - API endpoints documentation
 - **[API Documentation](http://localhost:8585/docs)** - Interactive API docs (when server is running)
+
+See [docs/README.md](./docs/README.md) for the complete documentation index.
 
 ## 🏗️ Architecture
 
@@ -100,6 +117,13 @@ civic-issue-reporter/
 │   └── apps/
 │       ├── web/             # React Web App
 │       └── mobile/          # Flutter Mobile App
+├── docs/                    # 📚 All Documentation
+│   ├── overview/            # Project overview
+│   ├── setup/               # Setup guides
+│   ├── fixes/               # Bug fixes & troubleshooting
+│   ├── features/            # Feature documentation
+│   ├── development/         # Development guides
+│   └── status/              # Project status
 ├── Model_training/          # AI Model Training
 └── docker-compose.yml       # Docker setup
 ```
@@ -108,27 +132,28 @@ civic-issue-reporter/
 
 ### For Citizens
 - ✅ User registration and login
-- ✅ Issue reporting with photos
+- ✅ Environmental issue reporting with photos
 - ✅ GPS location detection
-- ✅ View nearby issues on map
-- ✅ Upvote issues
-- ✅ Real-time status updates
-- ✅ Chat with administrators
+- ✅ View environmental hotspots on map
+- ✅ Upvote urgent issues
+- ✅ Real-time cleanup status updates
+- ✅ Chat with environmental authorities
+- ✅ Track personal environmental impact (Eco-Score)
 
-### For Administrators
-- ✅ Advanced issue filtering
-- ✅ Department-based assignment
-- ✅ Status management
-- ✅ Analytics dashboard
-- ✅ Heatmap visualization
+### For Environmental Authorities
+- ✅ Advanced environmental report filtering
+- ✅ Department-based assignment (Waste Management, Water Quality, etc.)
+- ✅ Cleanup status management
+- ✅ Environmental analytics dashboard
+- ✅ Pollution heatmap visualization
 - ✅ User management
-- ✅ Trust score tracking
+- ✅ Response time tracking
 
 ### AI Features
-- ✅ Automatic issue detection (potholes, cracks, manholes)
+- ✅ Automatic environmental issue detection (garbage dumps, pollution, waste)
 - ✅ Severity estimation
 - ✅ Duplicate detection
-- ✅ Text analysis
+- ✅ Text analysis for category suggestion
 
 ## 🔌 API Endpoints
 
@@ -164,7 +189,7 @@ civic-issue-reporter/
 - **Notifications** - User notifications
 - **Messages** - Chat messages
 
-See [Complete Setup Guide](./COMPLETE_SETUP_GUIDE.md) for detailed schema.
+See [Complete Setup Guide](./docs/setup/COMPLETE_SETUP_GUIDE.md) for detailed schema.
 
 ## 🔒 Security
 
@@ -211,7 +236,7 @@ npm test
 - Build release APK/IPA
 - Sign with production keys
 
-See [Complete Setup Guide](./COMPLETE_SETUP_GUIDE.md) for detailed deployment instructions.
+See [Complete Setup Guide](./docs/setup/COMPLETE_SETUP_GUIDE.md) for detailed deployment instructions.
 
 ## 🤝 Contributing
 
@@ -226,7 +251,7 @@ This project is provided as-is for demonstration and development purposes.
 
 ## 🆘 Support
 
-- Check [Troubleshooting](./COMPLETE_SETUP_GUIDE.md#troubleshooting) section
+- Check [Troubleshooting](./docs/fixes/) folder for common issues and solutions
 - Review API documentation at `/docs`
 - Check existing issues
 
@@ -258,9 +283,10 @@ The system comes pre-loaded with:
 
 ## 🚀 Get Started Now!
 
-1. **Quick Start:** See [QUICK_START.md](./QUICK_START.md)
-2. **Full Documentation:** See [COMPLETE_SETUP_GUIDE.md](./COMPLETE_SETUP_GUIDE.md)
+1. **📖 Complete Setup Guide:** See [SETUP_GUIDE.md](./SETUP_GUIDE.md) - **START HERE!**
+2. **Quick Start:** See [docs/setup/QUICK_START.md](./docs/setup/QUICK_START.md)
 3. **API Docs:** Visit `http://localhost:8585/docs` (when server is running)
+4. **Documentation Index:** See [docs/README.md](./docs/README.md)
 
 ---
 
