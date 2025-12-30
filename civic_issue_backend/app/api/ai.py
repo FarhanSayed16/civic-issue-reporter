@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException, Request
 from sqlalchemy.orm import Session
 from typing import List, Optional
+import os
+import json
 
 from app.schemas.ai import (
     ImageDetectRequest,
@@ -18,14 +20,56 @@ from app.schemas.ai import (
 from app.services.ai_service import AIService
 from app.services.issue_service import IssueService
 from app.core.db import get_db
+from app.core.rate_limiter import limiter
 
 
 router = APIRouter()
 ai = AIService()
 
+# Demo mode check
+DEMO_MODE = os.getenv('DEMO_MODE', 'false').lower() == 'true'
+
+def load_mock_ai_detection():
+    """Load mock AI detection data"""
+    try:
+        mock_path = os.path.join(os.path.dirname(__file__), '..', '..', 'mock_data', 'ai_detections.json')
+        if os.path.exists(mock_path):
+            with open(mock_path, 'r') as f:
+                data = json.load(f)
+                # Return first detection as example
+                if data.get('detections'):
+                    det = data['detections'][0]
+                    return [type('_D', (), {
+                        'label': det['label'],
+                        'confidence': det['confidence'],
+                        'bbox': None
+                    })()]
+        # Fallback mock data
+        return [type('_D', (), {'label': 'garbage', 'confidence': 0.95, 'bbox': None})()]
+    except Exception:
+        return [type('_D', (), {'label': 'garbage', 'confidence': 0.95, 'bbox': None})()]
+
+def load_mock_text_analysis():
+    """Load mock text analysis data"""
+    try:
+        mock_path = os.path.join(os.path.dirname(__file__), '..', '..', 'mock_data', 'text_analysis.json')
+        if os.path.exists(mock_path):
+            with open(mock_path, 'r') as f:
+                return json.load(f)
+        # Fallback mock data
+        return {'keywords': ['waste', 'pollution', 'garbage']}
+    except Exception:
+        return {'keywords': ['waste', 'pollution', 'garbage']}
+
 
 @router.post("/detect", response_model=ImageDetectResponse)
-def detect_image(req: ImageDetectRequest):
+@limiter.limit("30/minute")  # Rate limit: 30 AI detections per minute
+def detect_image(req: ImageDetectRequest, request: Request):
+    # Demo mode: return mock data
+    if DEMO_MODE:
+        detections = load_mock_ai_detection()
+        return ImageDetectResponse(detections=[Detection(label=d.label, confidence=d.confidence, bbox=d.bbox) for d in detections])
+    
     src: Optional[str] = None
     temp_path: Optional[str] = None
     # Support data URLs to avoid backend file persistence
@@ -76,13 +120,20 @@ def detect_image(req: ImageDetectRequest):
 
 
 @router.post("/analyze-text", response_model=TextAnalyzeResponse)
-def analyze_text(req: TextAnalyzeRequest):
+@limiter.limit("30/minute")  # Rate limit: 30 text analyses per minute
+def analyze_text(req: TextAnalyzeRequest, request: Request):
+    # Demo mode: return mock data
+    if DEMO_MODE:
+        mock_data = load_mock_text_analysis()
+        return TextAnalyzeResponse(keywords=mock_data.get("keywords", []))
+    
     data = ai.analyze_text(req.text)
     return TextAnalyzeResponse(keywords=data.get("keywords", []))
 
 
 @router.post("/severity", response_model=SeverityResponse)
-def severity(req: SeverityRequest):
+@limiter.limit("30/minute")  # Rate limit: 30 severity estimations per minute
+def severity(req: SeverityRequest, request: Request):
     detections = []
     # Reuse detection on data URL if provided
     if req.image_data_url:
