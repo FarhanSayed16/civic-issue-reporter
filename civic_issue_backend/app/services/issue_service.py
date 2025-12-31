@@ -16,20 +16,27 @@ class IssueService:
 
     def create_issue(self, payload):
         """Create a new issue with auto-assignment and AI analysis"""
-        # Check for duplicate issues first
-        duplicates = self.check_duplicate_issue(
-            lat=payload.lat,
-            lng=payload.lng,
-            media_urls=payload.media_urls,
-            description=payload.description
-        )
+        # ⚠️ DEMO MODE: Skip duplicate detection when DEMO_MODE is enabled
+        # This allows repeated testing from same location during demo recording.
+        # IMPORTANT: This is TEMPORARY and MUST be disabled in production!
+        from app.core.config import settings
         
-        if duplicates:
-            return {
-                "success": False,
-                "message": "Duplicate issue detected",
-                "duplicates": duplicates
-            }
+        if not settings.DEMO_MODE:
+            # Normal behavior: Check for duplicate issues
+            duplicates = self.check_duplicate_issue(
+                lat=payload.lat,
+                lng=payload.lng,
+                media_urls=payload.media_urls,
+                description=payload.description
+            )
+            
+            if duplicates:
+                return {
+                    "success": False,
+                    "message": "Duplicate issue detected",
+                    "duplicates": duplicates
+                }
+        # DEMO MODE: Skip duplicate check - allow multiple submissions
         
         # Use user-selected category instead of AI analysis
         user_category = payload.category
@@ -542,39 +549,54 @@ class IssueService:
 
     def _analyze_category(self, description: str, media_urls: List[str] = None):
         """Analyze issue to determine category based on AI model detection"""
-        # AI model detects: potholes, manholes, cracks, stagnant water, damaged signboards, garbage overflow, trash
+        # AI model detects environmental issues: garbage, waste, pollution, dumping, burning, etc.
         description_lower = description.lower()
         
-        if any(word in description_lower for word in ['pothole', 'potholes']):
-            return "Potholes"
-        elif any(word in description_lower for word in ['manhole', 'manholes']):
-            return "Manholes"
-        elif any(word in description_lower for word in ['crack', 'cracks']):
-            return "Road Cracks"
-        elif any(word in description_lower for word in ['stagnant water', 'water logging', 'water accumulation']):
-            return "Stagnant Water"
-        elif any(word in description_lower for word in ['damaged signboard', 'signboard', 'traffic sign', 'road sign']):
-            return "Damaged Signboards"
-        elif any(word in description_lower for word in ['garbage overflow', 'garbage', 'waste overflow']):
+        if any(word in description_lower for word in ['open garbage dump', 'illegal dump', 'large dump', 'waste dump']):
+            return "Open Garbage Dump"
+        elif any(word in description_lower for word in ['plastic pollution', 'plastic waste', 'plastic debris']):
+            return "Plastic Pollution"
+        elif any(word in description_lower for word in ['open burning', 'waste burning', 'burning garbage', 'burning trash']):
+            return "Open Burning"
+        elif any(word in description_lower for word in ['water body pollution', 'lake pollution', 'river pollution', 'pond pollution', 'contaminated water body']):
+            return "Water Body Pollution"
+        elif any(word in description_lower for word in ['construction waste', 'construction debris', 'demolition waste']):
+            return "Construction Waste"
+        elif any(word in description_lower for word in ['e-waste', 'electronic waste', 'electronic debris', 'battery waste']):
+            return "Electronic Waste (E-Waste)"
+        elif any(word in description_lower for word in ['biomedical waste', 'medical waste', 'syringe', 'hospital waste']):
+            return "Biomedical Waste"
+        elif any(word in description_lower for word in ['green space degradation', 'deforestation', 'tree cutting', 'land degradation']):
+            return "Green Space Degradation"
+        elif any(word in description_lower for word in ['drainage blockage', 'blocked drain', 'drain blocked', 'waterlogging']):
+            return "Drainage Blockage"
+        elif any(word in description_lower for word in ['water pollution', 'contaminated water', 'stagnant water', 'water logging', 'water accumulation', 'sewage']):
+            return "Water Pollution / Contaminated Water"
+        elif any(word in description_lower for word in ['garbage overflow', 'waste overflow', 'overflowing bin']):
             return "Garbage Overflow"
-        elif any(word in description_lower for word in ['trash', 'litter', 'debris']):
-            return "Trash"
+        elif any(word in description_lower for word in ['illegal dumping', 'trash', 'litter', 'debris', 'dumping']):
+            return "Illegal Dumping / Litter"
         else:
-            return "Other Issues"
+            return "Other Environmental Issues"
 
     def _map_department(self, category: str):
-        """Map category to department"""
+        """Map category to environmental authority/department"""
         department_mapping = {
-            "Potholes": "Road Maintenance Department",
-            "Road Cracks": "Road Maintenance Department",
-            "Manholes": "Sewer Department",
-            "Stagnant Water": "Water Department",
-            "Damaged Signboards": "Traffic Department",
-            "Garbage Overflow": "Waste Management Department",
-            "Trash": "Waste Management Department",
-            "Other Issues": "General Department"
+            "Open Garbage Dump": "Municipal Waste Collection",
+            "Plastic Pollution": "Pollution Control Board",
+            "Open Burning": "Pollution Control Board",
+            "Water Body Pollution": "Pollution Control Board",
+            "Construction Waste": "Municipal Waste Collection",
+            "Electronic Waste (E-Waste)": "Hazardous Waste Management",
+            "Biomedical Waste": "Hazardous Waste Management",
+            "Green Space Degradation": "Green Space Management",
+            "Drainage Blockage": "Waste Water Management",
+            "Water Pollution / Contaminated Water": "Water Quality Department",
+            "Garbage Overflow": "Solid Waste Management",
+            "Illegal Dumping / Litter": "Sanitation Department",
+            "Other Environmental Issues": "Environmental Authority"
         }
-        return department_mapping.get(category, "General Department")
+        return department_mapping.get(category, "Environmental Authority")
 
     def _calculate_distance(self, lat1: float, lng1: float, lat2: float, lng2: float):
         """Calculate distance between two points using Haversine formula"""

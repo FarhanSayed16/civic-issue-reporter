@@ -4,28 +4,33 @@ from typing import Dict, List
 
 class NLPService:
     def __init__(self):
-        # High priority keywords
+        # High priority keywords (environmental hazards, health risks, toxic waste)
         self.high_priority_keywords = [
             'urgent', 'emergency', 'dangerous', 'danger', 'critical', 'severe', 'serious',
-            'accident', 'injury', 'hurt', 'harm', 'unsafe', 'hazard', 'risk', 'threat',
+            'toxic', 'hazardous', 'chemical', 'contaminated', 'poisonous', 'harmful',
+            'health hazard', 'public health', 'disease', 'infection', 'unsafe', 'hazard', 'risk', 'threat',
             'blocking', 'blocked', 'stuck', 'trapped', 'flooding', 'flood', 'overflow',
-            'broken', 'damaged', 'collapsed', 'falling', 'leaking', 'explosion', 'fire',
-            'immediate', 'asap', 'now', 'quickly', 'fast', 'rush', 'priority'
+            'burning', 'smoke', 'pollution', 'toxic fumes', 'air pollution',
+            'immediate', 'asap', 'now', 'quickly', 'fast', 'rush', 'priority',
+            'biomedical waste', 'medical waste', 'e-waste', 'hazardous waste'
         ]
         
-        # Medium priority keywords
+        # Medium priority keywords (visible pollution, community impact, waste accumulation)
         self.medium_priority_keywords = [
             'problem', 'issue', 'concern', 'trouble', 'difficulty', 'inconvenience',
             'annoying', 'bothersome', 'uncomfortable', 'inconvenient', 'slow',
-            'delayed', 'late', 'waiting', 'queue', 'crowded', 'busy', 'noisy',
-            'dirty', 'messy', 'unclean', 'smelly', 'loud', 'bright', 'dark'
+            'garbage', 'waste', 'trash', 'litter', 'dumping', 'debris', 'rubbish',
+            'dirty', 'messy', 'unclean', 'smelly', 'foul smell', 'stinking',
+            'pollution', 'contaminated', 'polluted', 'dirty water', 'stagnant',
+            'overflow', 'overflowing', 'accumulated', 'piled up', 'scattered'
         ]
         
-        # Low priority keywords
+        # Low priority keywords (minor cleanup, cosmetic issues)
         self.low_priority_keywords = [
             'minor', 'small', 'little', 'slight', 'suggestion', 'improvement',
             'enhancement', 'better', 'nice', 'good', 'fine', 'okay', 'acceptable',
-            'maintenance', 'routine', 'regular', 'normal', 'expected', 'planned'
+            'cleanup', 'routine', 'regular', 'normal', 'expected', 'planned',
+            'cosmetic', 'aesthetic', 'visual', 'appearance'
         ]
 
     def detect_priority(self, description: str) -> str:
@@ -82,8 +87,10 @@ class NLPService:
         urgency_patterns = [
             r'\b(urgent|emergency|asap|immediately|now|quickly|fast)\b',
             r'\b\d+\s*(hours?|days?|minutes?)\b',  # Time references
-            r'\b(blocking|stuck|trapped|flooding)\b',  # Blocking situations
-            r'\b(accident|injury|danger|harm)\b',  # Safety issues
+            r'\b(blocking|stuck|trapped|flooding|overflow)\b',  # Blocking situations
+            r'\b(toxic|hazardous|contaminated|poisonous|health hazard|public health)\b',  # Environmental hazards
+            r'\b(burning|smoke|pollution|toxic fumes|air pollution)\b',  # Pollution indicators
+            r'\b(biomedical waste|medical waste|e-waste|hazardous waste)\b',  # Dangerous waste
             r'!{2,}',  # Multiple exclamation marks
             r'\b(very|extremely|highly|severely)\b'  # Intensifiers
         ]
