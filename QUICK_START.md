@@ -8,9 +8,28 @@
 
 ### Backend
 ```bash
+# Make sure you're in project root directory
+# (where README.md and civic_issue_backend folder are located)
+
+# Create virtual environment at root (.venv folder)
+python -m venv .venv
+
+# Activate virtual environment
+# Windows:
+.venv\Scripts\activate
+# Linux/Mac:
+# source .venv/bin/activate
+
+# Navigate to backend directory
 cd civic_issue_backend
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Initialize database
 python init_db.py
+
+# Start server
 python start.py
 ```
 ✅ Backend: http://localhost:8585
@@ -28,6 +47,30 @@ npm run dev
 cd frontend/apps/mobile
 flutter pub get
 flutter run
+```
+
+---
+
+## 🔌 VS Code Port Forwarding
+
+If you're using VS Code with remote development or containers, forward port 8585:
+
+### Method 1: Command Palette
+1. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac)
+2. Type: `Forward a Port`
+3. Enter: `8585`
+4. Click "Open in Browser" or access at `http://localhost:8585`
+
+### Method 2: Ports Tab
+1. Open VS Code's **Ports** tab (bottom panel)
+2. Click **"Forward a Port"** or **"+"** button
+3. Enter: `8585`
+4. Port will appear in the list - click the globe icon to open in browser
+
+
+IMPORTANT
+            MAKE THE PORT PUBLIC
+IMPORTANT
 ```
 
 ---
@@ -51,8 +94,10 @@ flutter run
 
 **Backend not starting?**
 - Check Python 3.8+ installed
-- Activate virtual environment
-- Install dependencies: `pip install -r requirements.txt`
+- Create `.venv` at project root: `python -m venv .venv`
+- Activate virtual environment: `.venv\Scripts\activate` (Windows) or `source .venv/bin/activate` (Linux/Mac)
+- Install dependencies: `cd civic_issue_backend && pip install -r requirements.txt`
+- If using VS Code remote: Forward port 8585 (see VS Code Port Forwarding section above)
 
 **Frontend not loading?**
 - Check Node.js 16+ installed
@@ -67,4 +112,5 @@ flutter run
 ---
 
 **Full Guide:** [SETUP_GUIDE.md](./SETUP_GUIDE.md)
+
 
