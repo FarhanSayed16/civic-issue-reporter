@@ -45,9 +45,10 @@ class Settings(BaseSettings):
     HCAPTCHA_SITE_KEY: str = os.getenv("HCAPTCHA_SITE_KEY", "")
     
     # ⚠️ DEMO MODE: Temporary flag to bypass duplicate detection for demo/testing
-    # Set DEMO_MODE=true in .env to enable. MUST be disabled in production!
+    # Set DEMO_MODE=false in .env to disable. Currently enabled by default for testing.
     # This allows multiple issue submissions from same location during demo recording.
-    DEMO_MODE: bool = os.getenv("DEMO_MODE", "false").lower() == "true"
+    # IMPORTANT: Set DEMO_MODE=false in production!
+    DEMO_MODE: bool = os.getenv("DEMO_MODE", "true").lower() == "true"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
