@@ -17,8 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final IssueRepository _issueRepository = IssueRepository();
   late Future<List<Issue>> _futureIssues;
 
-  String _activeFilter = 'My locality';
-  final List<String> _filters = ['My locality', 'highly voted', 'India'];
+  String _activeFilter = 'My Locality';
+  final List<String> _filters = ['My Locality', 'Most Urgent', 'Recently Cleaned'];
 
   @override
   void initState() {
@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(
-                        child: Text('No issues found in your area.'));
+                        child: Text('No environmental reports found in your area.'));
                   }
 
                   final issues = snapshot.data!;
@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search',
+                hintText: 'Search environmental reports...',
                 prefixIcon: const Icon(Icons.search,
                     color: AppColors.textLight, size: 20),
                 filled: true,
