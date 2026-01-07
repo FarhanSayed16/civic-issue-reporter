@@ -29,14 +29,22 @@ class Issue {
   });
 
   factory Issue.fromJson(Map<String, dynamic> json) {
+    // Backend returns 'lat' and 'lng', but also support 'latitude' and 'longitude' for compatibility
+    final lat = json['lat'] ?? json['latitude'];
+    final lng = json['lng'] ?? json['longitude'];
+    
     return Issue(
       id: json['id'] ?? 0,
       description: json['description'] ?? 'No description provided',
       status: json['status'] ?? 'unknown',
       category: json['category'] ?? 'Uncategorized',
-      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,   // 👈 Added
-      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0, // 👈 Added
-      imageUrl: json['image_url'],
+      latitude: (lat as num?)?.toDouble() ?? 0.0,
+      longitude: (lng as num?)?.toDouble() ?? 0.0,
+      // Handle both image_url (single) and media_urls (array) from backend
+      imageUrl: json['image_url'] ?? 
+                (json['media_urls'] != null && (json['media_urls'] as List).isNotEmpty 
+                  ? (json['media_urls'] as List).first 
+                  : null),
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
