@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../data/models/issue.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/safe_image_widget.dart';
 
 class IssueCard extends StatelessWidget {
   final Issue issue;
@@ -26,7 +28,7 @@ class IssueCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         // TODO: Navigate to the full Issue Details page
-        print("Tapped on Issue #${issue.id}");
+        print("Tapped on Environmental Report #${issue.id}");
       },
       child: Container(
         padding: const EdgeInsets.all(16.0),
@@ -45,22 +47,17 @@ class IssueCard extends StatelessWidget {
             Text(issue.description, style: const TextStyle(fontSize: 16, height: 1.4)),
             const SizedBox(height: 12),
 
-            // --- NEW: Image Display ---
+            // --- NEW: Image Display (Safe handling for base64 and network URLs) ---
             if (issue.imageUrl != null && issue.imageUrl!.isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  issue.imageUrl!,
+                child: SafeImageWidget(
+                  imageUrl: issue.imageUrl!,
                   fit: BoxFit.cover,
-                  // Show a loader while the image is loading
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                  // Show an error icon if the image fails to load
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.broken_image, color: Colors.grey, size: 48);
-                  },
+                  width: null, // Let it expand to container width naturally
+                  height: 200, // Constrain height to prevent memory issues
+                  placeholder: const Center(child: CircularProgressIndicator()),
+                  errorWidget: const Icon(Icons.broken_image, color: Colors.grey, size: 48),
                 ),
               ),
             const SizedBox(height: 12),
@@ -82,7 +79,20 @@ class IssueCard extends StatelessWidget {
                 _StatIcon(icon: _getCategoryIcon(issue.category), text: issue.category),
                 IconButton(
                   icon: const Icon(LucideIcons.share2, color: AppColors.textLight, size: 20),
-                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Share to social media coming soon!'))),
+                  onPressed: () async {
+                    try {
+                      await Share.share(
+                        'Environmental Report #${issue.id}\n\n${issue.description}\n\nCategory: ${issue.category}\nStatus: ${issue.status == 'new' ? 'Reported' : issue.status == 'in_progress' ? 'Cleanup In Progress' : issue.status == 'resolved' ? 'Cleaned Up' : issue.status}\n\nHelp monitor environmental health in your city with SwachhCity!',
+                        subject: 'Environmental Report - ${issue.category}',
+                      );
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Failed to share report')),
+                        );
+                      }
+                    }
+                  },
                 ),
               ],
             ),
