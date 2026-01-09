@@ -59,7 +59,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(height: 1),
           _SettingsTile(
-            title: 'About Civic Reporter',
+            title: 'About SwachhCity',
             onTap: () {},
             showArrow: true,
           ),
