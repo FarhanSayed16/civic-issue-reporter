@@ -34,7 +34,7 @@ class BottomNavBar extends StatelessWidget {
           _NavItem(icon: LucideIcons.map, label: 'Map', index: 0, currentIndex: currentIndex, onTap: onTap),
           _NavItem(icon: LucideIcons.house, label: 'Home', index: 1, currentIndex: currentIndex, onTap: onTap),
           _NavItem(icon: LucideIcons.circlePlus, label: 'Add', index: 2, currentIndex: currentIndex, onTap: onTap),
-          _NavItem(icon: LucideIcons.info, label: 'Know your Neta', index: 3, currentIndex: currentIndex, onTap: onTap),
+          _NavItem(icon: LucideIcons.info, label: 'Profile', index: 3, currentIndex: currentIndex, onTap: onTap),
         ],
       ),
     );
