@@ -11,10 +11,10 @@ class NotificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Mock data for the notification list
     final List<Map<String, dynamic>> notifications = [
-      {'type': 'resolved', 'actor': 'Nagar Sevak', 'issue': 'irregular water supply issue', 'time': DateTime.now().subtract(const Duration(hours: 1))},
-      {'type': 'repost', 'actor': 'Robert Doe', 'issue': 'irregular water supply issue', 'time': DateTime.now().subtract(const Duration(hours: 3))},
-      {'type': 'upvote', 'actor': 'Alok Chauhan', 'issue': 'irregular water supply issue', 'time': DateTime.now().subtract(const Duration(hours: 5))},
-      {'type': 'status_update', 'actor': 'Nagar Sevak', 'issue': 'Your issue is under review, assigned to municipal officer', 'time': DateTime.now().subtract(const Duration(hours: 7))},
+      {'type': 'resolved', 'actor': 'SwachhCity', 'issue': 'water pollution issue', 'time': DateTime.now().subtract(const Duration(hours: 1))},
+      {'type': 'repost', 'actor': 'Robert Doe', 'issue': 'water pollution issue', 'time': DateTime.now().subtract(const Duration(hours: 3))},
+      {'type': 'upvote', 'actor': 'Alok Chauhan', 'issue': 'water pollution issue', 'time': DateTime.now().subtract(const Duration(hours: 5))},
+      {'type': 'status_update', 'actor': 'SwachhCity', 'issue': 'Your environmental report is under review, assigned to environmental authority', 'time': DateTime.now().subtract(const Duration(hours: 7))},
     ];
 
     return DefaultTabController(
