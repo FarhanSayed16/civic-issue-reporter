@@ -98,16 +98,16 @@ class _StatusBadge extends StatelessWidget {
     switch (status) {
       case 'in_progress':
         color = AppColors.warning;
-        text = 'In Progress';
+        text = 'Cleanup In Progress';
         break;
       case 'resolved':
         color = AppColors.success;
-        text = 'Resolved';
+        text = 'Cleaned Up';
         break;
       case 'new':
       default:
         color = AppColors.primary;
-        text = 'New';
+        text = 'Reported';
     }
 
     return Container(
