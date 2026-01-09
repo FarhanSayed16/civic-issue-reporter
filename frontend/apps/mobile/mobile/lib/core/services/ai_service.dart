@@ -10,32 +10,37 @@ import '../../data/models/ai_detection.dart';
 class AIService {
   final _storageService = StorageService();
 
-  /// Map AI detection labels to frontend categories
+  /// Map AI detection labels to frontend environmental categories
   String _mapToFrontendCategory(String label) {
     final labelLower = label.toLowerCase();
 
-    if (labelLower.contains('pothole') || labelLower.contains('hole')) {
-      return 'Potholes';
-    } else if (labelLower.contains('manhole') || labelLower.contains('sewer')) {
-      return 'Manholes';
-    } else if (labelLower.contains('garbage') ||
-        labelLower.contains('trash') ||
-        labelLower.contains('waste')) {
+    if (labelLower.contains('garbage') || labelLower.contains('waste') || labelLower.contains('dump')) {
+      return 'Open Garbage Dump';
+    } else if (labelLower.contains('plastic')) {
+      return 'Plastic Pollution';
+    } else if (labelLower.contains('burning') || labelLower.contains('fire') || labelLower.contains('smoke')) {
+      return 'Open Burning';
+    } else if (labelLower.contains('water body') || labelLower.contains('lake') || labelLower.contains('river') || labelLower.contains('pond')) {
+      return 'Water Body Pollution';
+    } else if (labelLower.contains('construction') || labelLower.contains('demolition')) {
+      return 'Construction Waste';
+    } else if (labelLower.contains('e-waste') || labelLower.contains('electronic')) {
+      return 'Electronic Waste (E-Waste)';
+    } else if (labelLower.contains('biomedical') || labelLower.contains('medical') || labelLower.contains('hospital')) {
+      return 'Biomedical Waste';
+    } else if (labelLower.contains('green space') || labelLower.contains('deforestation') || labelLower.contains('tree')) {
+      return 'Green Space Degradation';
+    } else if (labelLower.contains('drainage') || labelLower.contains('drain') || labelLower.contains('blocked')) {
+      return 'Drainage Blockage';
+    } else if (labelLower.contains('water pollution') || labelLower.contains('contaminated water') || labelLower.contains('sewage')) {
+      return 'Water Pollution / Contaminated Water';
+    } else if (labelLower.contains('garbage overflow') || labelLower.contains('overflowing')) {
       return 'Garbage Overflow';
-    } else if (labelLower.contains('water') ||
-        labelLower.contains('leak') ||
-        labelLower.contains('stagnant')) {
-      return 'Stagnant Water';
-    } else if (labelLower.contains('crack') || labelLower.contains('road')) {
-      return 'Road Cracks';
-    } else if (labelLower.contains('sign') || labelLower.contains('board')) {
-      return 'Damaged Signboards';
-    } else if (labelLower.contains('streetlight') ||
-        labelLower.contains('light')) {
-      return 'Damaged Signboards'; // Map streetlights to signboards for now
+    } else if (labelLower.contains('illegal dumping') || labelLower.contains('litter') || labelLower.contains('trash')) {
+      return 'Illegal Dumping / Litter';
     }
 
-    return 'Other Issues'; // Default fallback
+    return 'Other Environmental Issues'; // Default fallback
   }
 
   /// Detect issues from image using YOLO model
