@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 import '../../../../data/models/issue.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cached_network_image.dart';
 
 class IssueCard extends StatelessWidget {
   final Issue issue;
@@ -45,22 +46,15 @@ class IssueCard extends StatelessWidget {
             Text(issue.description, style: const TextStyle(fontSize: 16, height: 1.4)),
             const SizedBox(height: 12),
 
-            // --- NEW: Image Display ---
+            // --- NEW: Image Display (Optimized with Caching) ---
             if (issue.imageUrl != null && issue.imageUrl!.isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  issue.imageUrl!,
+                child: CachedNetworkImage(
+                  imageUrl: issue.imageUrl!,
                   fit: BoxFit.cover,
-                  // Show a loader while the image is loading
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                  // Show an error icon if the image fails to load
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.broken_image, color: Colors.grey, size: 48);
-                  },
+                  placeholder: const Center(child: CircularProgressIndicator()),
+                  errorWidget: const Icon(Icons.broken_image, color: Colors.grey, size: 48),
                 ),
               ),
             const SizedBox(height: 12),
