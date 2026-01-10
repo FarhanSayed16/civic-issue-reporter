@@ -1,0 +1,30 @@
+{
+  "detections": [
+    {
+      "label": "garbage",
+      "confidence": 0.95,
+      "suggestedCategory": "Open Garbage Dump"
+    },
+    {
+      "label": "plastic",
+      "confidence": 0.88,
+      "suggestedCategory": "Plastic Pollution"
+    },
+    {
+      "label": "water pollution",
+      "confidence": 0.92,
+      "suggestedCategory": "Water Body Pollution"
+    },
+    {
+      "label": "construction waste",
+      "confidence": 0.85,
+      "suggestedCategory": "Construction Waste"
+    },
+    {
+      "label": "illegal dumping",
+      "confidence": 0.90,
+      "suggestedCategory": "Illegal Dumping / Litter"
+    }
+  ]
+}
+
