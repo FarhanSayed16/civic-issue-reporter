@@ -110,7 +110,7 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/home" className="text-2xl font-display font-bold text-white tracking-tight">
-          NagarSevak
+          SwachhCity
         </Link>
 
         {/* SEARCH (desktop) */}
