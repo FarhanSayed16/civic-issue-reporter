@@ -1,6 +1,7 @@
 // File: E:/civic-issue-reporter/apps/mobile/lib/features/issues/presentation/report_issue_screen.dart
 
 import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,28 +28,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
   Uint8List? _imageBytes;
   Position? _currentPosition;
   String _locationDisplay = 'Fetching location...'; // Display for location
-  String _selectedCategory = 'Potholes'; // Default category
-  String _selectedDepartment = 'Road Maintenance Department'; // Default department
-  
-  // Department mapping based on category
-  String _getDepartmentForCategory(String category) {
-    switch (category) {
-      case 'Potholes':
-      case 'Road Cracks':
-        return 'Road Maintenance Department';
-      case 'Manholes':
-        return 'Sewer Department';
-      case 'Stagnant Water':
-        return 'Water Department';
-      case 'Damaged Signboards':
-        return 'Traffic Department';
-      case 'Garbage Overflow':
-      case 'Trash':
-        return 'Waste Management Department';
-      default:
-        return 'General Department';
-    }
-  }
+  String _selectedCategory = 'Open Garbage Dump'; // Default category (environmental)
   bool _postAnonymously = false;
   bool _isLoading = false;
 
@@ -81,29 +61,126 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: source, imageQuality: 80);
-    if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes();
-      setState(() {
-        _imageBytes = bytes;
-        _aiSuggestion = '';
-        _detectionResults = null;
-      });
+    try {
+      final pickedFile =
+          await ImagePicker().pickImage(source: source, imageQuality: 80);
+      if (pickedFile != null) {
+        // Check if file exists before reading
+        final file = File(pickedFile.path);
+        if (!await file.exists()) {
+          if (mounted) {
+            _showSnackBar('Image file not found. Please try again.', isError: true);
+          }
+          return;
+        }
+        
+        final bytes = await pickedFile.readAsBytes();
+        
+        // Validate image
+        final validationError = _validateImage(bytes, pickedFile.path);
+        if (validationError != null) {
+          if (mounted) {
+            _showSnackBar(validationError, isError: true);
+          }
+          return;
+        }
+        
+        setState(() {
+          _imageBytes = bytes;
+          _aiSuggestion = '';
+          _detectionResults = null;
+        });
 
-      // Automatically trigger AI analysis when image is selected
-      await _analyzeImage();
+        // Automatically trigger AI analysis when image is selected
+        await _analyzeImage();
+      }
+    } catch (e) {
+      if (mounted) {
+        String errorMessage = 'Failed to pick image. Please try again.';
+        if (e.toString().contains('No such file')) {
+          errorMessage = 'Image file not found. Please select the image again.';
+        } else {
+          errorMessage = 'Failed to pick image: ${e.toString()}';
+        }
+        _showSnackBar(errorMessage, isError: true);
+      }
     }
   }
 
+  String? _validateImage(Uint8List bytes, String? filePath) {
+    // Check file size (max 5MB)
+    const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+    if (bytes.length > maxSizeBytes) {
+      return 'Image is too large. Please select an image smaller than 5MB.';
+    }
+
+    // Check minimum size (at least 10KB)
+    const minSizeBytes = 10 * 1024; // 10KB
+    if (bytes.length < minSizeBytes) {
+      return 'Image is too small. Please select a valid image.';
+    }
+
+    // Check file format by extension (if available)
+    if (filePath != null) {
+      final extension = filePath.toLowerCase().split('.').last;
+      final allowedFormats = ['jpg', 'jpeg', 'png', 'webp'];
+      if (!allowedFormats.contains(extension)) {
+        return 'Unsupported image format. Please use JPG, PNG, or WebP.';
+      }
+    }
+
+    // Check if it's a valid image by checking magic bytes
+    if (bytes.length < 4) {
+      return 'Invalid image file.';
+    }
+
+    // Check for common image file signatures
+    final isValidImage = 
+        // JPEG: FF D8 FF
+        (bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF) ||
+        // PNG: 89 50 4E 47
+        (bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47) ||
+        // WebP: RIFF...WEBP (simplified check)
+        (bytes.length >= 12 && 
+         bytes[0] == 0x52 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x46 &&
+         bytes[8] == 0x57 && bytes[9] == 0x45 && bytes[10] == 0x42 && bytes[11] == 0x50);
+
+    if (!isValidImage) {
+      return 'Invalid image file. Please select a valid JPG, PNG, or WebP image.';
+    }
+
+    return null; // Image is valid
+  }
+
   Future<void> _getCurrentLocation() async {
+    // Check if location services are enabled
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      if (mounted) {
+        _showSnackBar(
+          'Location services are disabled. Please enable them in your device settings.',
+          isError: true,
+        );
+        setState(() {
+          _locationDisplay = 'Location services disabled';
+        });
+      }
+      return;
+    }
+
     // Check location permission
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         if (mounted) {
-          _showSnackBar('Location permission denied', isError: true);
+          _showSnackBar(
+            'Location permission is required to report environmental issues. Please enable it in app settings.',
+            isError: true,
+          );
+          setState(() {
+            _locationDisplay = 'Permission denied - Tap to enable';
+          });
         }
         return;
       }
@@ -111,7 +188,13 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
 
     if (permission == LocationPermission.deniedForever) {
       if (mounted) {
-        _showSnackBar('Location permission permanently denied', isError: true);
+        _showSnackBar(
+          'Location permission is permanently denied. Please enable it in app settings to report issues.',
+          isError: true,
+        );
+        setState(() {
+          _locationDisplay = 'Permission denied - Open settings';
+        });
       }
       return;
     }
@@ -157,7 +240,21 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
       }
       // --- End of Update ---
     } catch (e) {
-      if (mounted) _showSnackBar('Failed to get location: $e', isError: true);
+      if (mounted) {
+        String errorMessage = 'Failed to get location. Please try again.';
+        final errorString = e.toString().toLowerCase();
+        if (errorString.contains('timeout')) {
+          errorMessage = 'Location request timed out. Please check your GPS signal and try again.';
+        } else if (errorString.contains('permission')) {
+          errorMessage = 'Location permission is required. Please enable it in app settings.';
+        } else if (errorString.contains('service')) {
+          errorMessage = 'Location services are disabled. Please enable GPS in device settings.';
+        }
+        _showSnackBar(errorMessage, isError: true);
+        setState(() {
+          _locationDisplay = 'Failed to get location - Tap to retry';
+        });
+      }
     }
   }
 
@@ -230,9 +327,8 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
       final createdIssue = await _issueRepository.createIssue(
         description: _descriptionController.text.trim(),
         category: _selectedCategory,
-        department: _selectedDepartment,
-        latitude: _currentPosition!.latitude,
-        longitude: _currentPosition!.longitude,
+        lat: _currentPosition!.latitude,
+        lng: _currentPosition!.longitude,
         imageBytes: _imageBytes!,
         isAnonymous: _postAnonymously,
         addressLine1: _addressLine1Controller.text.trim(),
@@ -252,8 +348,20 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
         );
       }
     } catch (e) {
-      if (mounted)
-        _showSnackBar('Failed to report issue: ${e.toString()}', isError: true);
+      if (mounted) {
+        // Extract user-friendly error message
+        String errorMessage = 'Failed to report issue. Please try again.';
+        if (e is Exception) {
+          final message = e.toString();
+          // Remove "Exception: " prefix if present
+          if (message.startsWith('Exception: ')) {
+            errorMessage = message.substring(12);
+          } else {
+            errorMessage = message;
+          }
+        }
+        _showSnackBar(errorMessage, isError: true);
+      }
     } finally {
       if (mounted)
         setState(() {
@@ -626,21 +734,27 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
               // Category Dropdown
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
+                isExpanded: true, // Fix overflow by expanding to available width
                 items: [
-                  'Potholes',
-                  'Road Cracks',
-                  'Manholes',
-                  'Stagnant Water',
-                  'Damaged Signboards',
+                  'Open Garbage Dump',
+                  'Plastic Pollution',
+                  'Open Burning',
+                  'Water Body Pollution',
+                  'Construction Waste',
+                  'Electronic Waste (E-Waste)',
+                  'Biomedical Waste',
+                  'Green Space Degradation',
+                  'Drainage Blockage',
+                  'Water Pollution / Contaminated Water',
                   'Garbage Overflow',
-                  'Trash',
-                  'Other Issues'
+                  'Illegal Dumping / Litter',
+                  'Other Environmental Issues'
                 ]
-                    .map((v) => DropdownMenuItem(value: v, child: Text(v)))
+                    .map((v) => DropdownMenuItem(value: v, child: Text(v, overflow: TextOverflow.ellipsis)))
                     .toList(),
                 onChanged: (val) => setState(() {
                   _selectedCategory = val!;
-                  _selectedDepartment = _getDepartmentForCategory(val!);
+                  // Department is auto-assigned by backend based on category
                 }),
                 decoration: InputDecoration(
                   prefixIcon: const Icon(LucideIcons.layoutGrid,
@@ -654,32 +768,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Department Dropdown (Auto-set based on category)
-              DropdownButtonFormField<String>(
-                value: _selectedDepartment,
-                items: [
-                  'General Department',
-                  'Road Maintenance Department',
-                  'Sewer Department',
-                  'Water Department',
-                  'Traffic Department',
-                  'Waste Management Department',
-                ]
-                    .map((v) => DropdownMenuItem(value: v, child: Text(v)))
-                    .toList(),
-                onChanged: null, // Read-only, automatically set by category
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(LucideIcons.building,
-                      color: AppColors.textLight),
-                  labelText: 'Department (Auto-assigned)',
-                  filled: true,
-                  fillColor: Colors.grey.shade100, // Gray background to indicate read-only
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none),
-                ),
-              ),
+              // Note: Department is auto-assigned by backend based on category
               const SizedBox(height: 16),
 
               // Address Fields
