@@ -6,9 +6,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 export default function HelpSettingsPage(){
   const faqs = [
-    { id: 1, question: 'How do I report an issue?', answer: 'Go to the All Issues page and click “+ Report New Issue”. Fill in the details and submit.' },
-    { id: 2, question: 'How can I track an issue status?', answer: 'Open “All Issues” and use search or filters to find the issue. The status is shown in the list.' },
-    { id: 3, question: 'Who can resolve issues?', answer: 'Issues are handled by the appropriate municipal department based on category and ward.' },
+    { id: 1, question: 'How do I report an environmental issue?', answer: 'Go to the All Environmental Reports page and click "+ Report New Environmental Issue". Fill in the details and submit.' },
+    { id: 2, question: 'How can I track an environmental report status?', answer: 'Open "All Environmental Reports" and use search or filters to find the report. The status is shown in the list.' },
+    { id: 3, question: 'Who can resolve environmental issues?', answer: 'Environmental reports are handled by the appropriate environmental authority or waste management department based on category and location.' },
   ];
   const manualUrl = '#';
 
@@ -32,7 +32,7 @@ export default function HelpSettingsPage(){
         <Card>
           <CardHeader><CardTitle>User Manual</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-neutral-600">Download the comprehensive guide to learn how to report, track, and resolve issues within GOV.CONNECT.</p>
+            <p className="text-sm text-neutral-600">Download the comprehensive guide to learn how to report, track, and resolve environmental issues within SwachhCity.</p>
             <Button asChild className="bg-primary hover:bg-primary/90">
               <a href={manualUrl} target="_blank" rel="noreferrer">Download User Guide (PDF)</a>
             </Button>
