@@ -68,7 +68,7 @@ const Login = () => {
     <div className="min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-10 border border-gray-100">
         <h2 className="text-4xl font-display font-bold text-center mb-8 text-gray-800">
-          Welcome Back to <span className="text-primary">NagarSevak</span>
+          Welcome Back to <span className="text-primary">SwachhCity</span>
         </h2>
 
         {serverError && (
