@@ -35,11 +35,17 @@ export default function AllIssuesAdminPage() {
       default: 'bg-gray-400 text-white',
     };
     const className = statusMap[status] || statusMap.default;
-    const formattedStatus = (status || '').replace('_', ' ').replace(/^./, c => c.toUpperCase());
+    const statusLabelMap = {
+      'new': 'Reported',
+      'in_progress': 'Cleanup In Progress',
+      'resolved': 'Cleaned Up',
+      'spam': 'Spam'
+    };
+    const formattedStatus = statusLabelMap[status] || (status || '').replace('_', ' ').replace(/^./, c => c.toUpperCase());
     return <Badge className={`px-2 py-1 rounded-full text-xs font-medium ${className}`}>{formattedStatus}</Badge>;
   };
 
-  const categoryOptions = ["Potholes", "Road Cracks", "Manholes", "Stagnant Water", "Damaged Signboards", "Garbage Overflow", "Trash", "Other Issues"];
+  const categoryOptions = ["Open Garbage Dump", "Plastic Pollution", "Open Burning", "Water Body Pollution", "Construction Waste", "Electronic Waste (E-Waste)", "Biomedical Waste", "Green Space Degradation", "Drainage Blockage", "Water Pollution / Contaminated Water", "Garbage Overflow", "Illegal Dumping / Litter", "Other Environmental Issues"];
 
   // Filter issues by admin's department
   const filteredIssues = issues?.filter(issue => {
@@ -54,7 +60,7 @@ export default function AllIssuesAdminPage() {
     <div className="space-y-6 p-4 md:p-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">All Issues</h1>
+          <h1 className="text-3xl font-bold text-slate-800">All Environmental Reports</h1>
           <p className="text-slate-600 mt-1">
             Department: {user?.department}
           </p>
@@ -64,9 +70,48 @@ export default function AllIssuesAdminPage() {
         </Button>
       </div>
 
+      {/* Filter Presets */}
+      <div className="flex gap-2 flex-wrap">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setStatusFilter('new');
+            setPriorityFilter('high');
+          }}
+          className="text-xs"
+        >
+          🔴 Urgent
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setStatusFilter('');
+            setCategoryFilter('');
+            setPriorityFilter('');
+          }}
+          className="text-xs"
+        >
+          🏢 My Department
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            // Filter for this week (would need date logic in real implementation)
+            setStatusFilter('');
+            setCategoryFilter('');
+          }}
+          className="text-xs"
+        >
+          📅 This Week
+        </Button>
+      </div>
+
       <Card className="shadow-sm">
         <CardHeader>
-          <CardTitle className="text-xl text-slate-800">Department Issues (Read-Only)</CardTitle>
+          <CardTitle className="text-xl text-slate-800">Department Environmental Reports (Read-Only)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -105,7 +150,7 @@ export default function AllIssuesAdminPage() {
             </div>
           ) : filteredIssues.length === 0 ? (
             <div className="text-center text-slate-500 py-10">
-              <p>No issues found in your department.</p>
+              <p>No environmental reports found in your department.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -114,7 +159,7 @@ export default function AllIssuesAdminPage() {
                   <div className="flex justify-between items-start">
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold">Issue #{issue.id}</h3>
+                        <h3 className="text-lg font-semibold">Environmental Report #{issue.id}</h3>
                         {statusBadge(issue.status)}
                         {issue.assigned_admin_id && (
                           <Badge variant="outline" className="text-xs">
@@ -169,7 +214,7 @@ export default function AllIssuesAdminPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Issue #{selectedIssue.id} Details</CardTitle>
+              <CardTitle>Environmental Report #{selectedIssue.id} Details</CardTitle>
               <Button variant="outline" size="sm" onClick={() => setSelectedIssue(null)}>
                 Close
               </Button>
