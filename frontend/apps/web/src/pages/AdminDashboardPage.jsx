@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,10 +22,16 @@ import {
   MapPin,
   Calendar,
   Filter,
-  Eye
+  Eye,
+  UserCheck,
+  BarChart3,
+  Settings
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminDashboardPage() {
+  const { user } = useSelector((s) => s.auth);
+  const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
@@ -60,9 +67,15 @@ export default function AdminDashboardPage() {
       resolved: 'bg-green-100 text-green-800',
       spam: 'bg-red-100 text-red-800'
     };
+    const statusLabelMap = {
+      'new': 'Reported',
+      'in_progress': 'Cleanup In Progress',
+      'resolved': 'Cleaned Up',
+      'spam': 'Spam'
+    };
     return (
       <Badge className={variants[status] || 'bg-gray-100 text-gray-800'}>
-        {status.replace('_', ' ').toUpperCase()}
+        {statusLabelMap[status] || status.replace('_', ' ').toUpperCase()}
       </Badge>
     );
   };
@@ -87,8 +100,10 @@ export default function AdminDashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600">Department analytics and issue overview</p>
+          <h1 className="text-3xl font-bold text-gray-900">Environmental Dashboard</h1>
+          <p className="text-gray-600">
+            {user?.name ? `Welcome, ${user.name}. ` : ''}Monitor and manage environmental reports in your jurisdiction.
+          </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -109,40 +124,57 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
+      {/* Quick Actions Bar */}
+      <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-gray-700">Quick Actions:</span>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/issues/admin')}
+                className="flex items-center gap-2"
+              >
+                <UserCheck className="h-4 w-4" />
+                Assign Reports
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/issues/admin')}
+                className="flex items-center gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                Update Status
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/reports')}
+                className="flex items-center gap-2"
+              >
+                <BarChart3 className="h-4 w-4" />
+                View Analytics
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Analytics Stats */}
       {analyticsStats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center">
-                <AlertTriangle className="h-8 w-8 text-blue-500" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Issues</p>
-                  <p className="text-2xl font-bold text-gray-900">{analyticsStats.total_issues}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
                 <CheckCircle className="h-8 w-8 text-green-500" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Resolved Today</p>
+                  <p className="text-sm font-medium text-gray-600">Cleanups Completed Today</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Issues resolved in last 24h</p>
                   <p className="text-2xl font-bold text-gray-900">{analyticsStats.resolved_today}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Clock className="h-8 w-8 text-yellow-500" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Pending</p>
-                  <p className="text-2xl font-bold text-gray-900">{analyticsStats.pending}</p>
                 </div>
               </div>
             </CardContent>
@@ -153,8 +185,35 @@ export default function AdminDashboardPage() {
               <div className="flex items-center">
                 <TrendingUp className="h-8 w-8 text-purple-500" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Avg Resolution</p>
+                  <p className="text-sm font-medium text-gray-600">Avg Response Time</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Time to action</p>
                   <p className="text-2xl font-bold text-gray-900">{analyticsStats.avg_resolution_time_hours}h</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <Clock className="h-8 w-8 text-yellow-500" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Action Required</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Reports awaiting cleanup</p>
+                  <p className="text-2xl font-bold text-gray-900">{analyticsStats.pending}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <AlertTriangle className="h-8 w-8 text-blue-500" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Total Reports Filed</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Citizens monitoring environment</p>
+                  <p className="text-2xl font-bold text-gray-900">{analyticsStats.total_issues}</p>
                 </div>
               </div>
             </CardContent>
@@ -167,7 +226,7 @@ export default function AdminDashboardPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
-            Filter Department Issues
+            Filter Department Environmental Reports
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -180,9 +239,9 @@ export default function AdminDashboardPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="new">New</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="resolved">Resolved</SelectItem>
+                  <SelectItem value="new">Reported</SelectItem>
+                  <SelectItem value="in_progress">Cleanup In Progress</SelectItem>
+                  <SelectItem value="resolved">Cleaned Up</SelectItem>
                   <SelectItem value="spam">Spam</SelectItem>
                 </SelectContent>
               </Select>
@@ -196,14 +255,19 @@ export default function AdminDashboardPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="Potholes">Potholes</SelectItem>
-                  <SelectItem value="Road Cracks">Road Cracks</SelectItem>
-                  <SelectItem value="Manholes">Manholes</SelectItem>
-                  <SelectItem value="Stagnant Water">Stagnant Water</SelectItem>
-                  <SelectItem value="Damaged Signboards">Damaged Signboards</SelectItem>
+                  <SelectItem value="Open Garbage Dump">Open Garbage Dump</SelectItem>
+                  <SelectItem value="Plastic Pollution">Plastic Pollution</SelectItem>
+                  <SelectItem value="Open Burning">Open Burning</SelectItem>
+                  <SelectItem value="Water Body Pollution">Water Body Pollution</SelectItem>
+                  <SelectItem value="Construction Waste">Construction Waste</SelectItem>
+                  <SelectItem value="Electronic Waste (E-Waste)">Electronic Waste (E-Waste)</SelectItem>
+                  <SelectItem value="Biomedical Waste">Biomedical Waste</SelectItem>
+                  <SelectItem value="Green Space Degradation">Green Space Degradation</SelectItem>
+                  <SelectItem value="Drainage Blockage">Drainage Blockage</SelectItem>
+                  <SelectItem value="Water Pollution / Contaminated Water">Water Pollution / Contaminated Water</SelectItem>
                   <SelectItem value="Garbage Overflow">Garbage Overflow</SelectItem>
-                  <SelectItem value="Trash">Trash</SelectItem>
-                  <SelectItem value="Other Issues">Other Issues</SelectItem>
+                  <SelectItem value="Illegal Dumping / Litter">Illegal Dumping / Litter</SelectItem>
+                  <SelectItem value="Other Environmental Issues">Other Environmental Issues</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -229,18 +293,19 @@ export default function AdminDashboardPage() {
       {/* Department Issues */}
       <Card>
         <CardHeader>
-          <CardTitle>Department Issues ({departmentIssues?.length || 0})</CardTitle>
+          <CardTitle>Department Environmental Reports ({departmentIssues?.length || 0})</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Loading issues...</p>
+              <p className="mt-2 text-gray-600">Loading environmental reports...</p>
             </div>
           ) : departmentIssues?.length === 0 ? (
             <div className="text-center py-8">
-              <AlertTriangle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No department issues found</p>
+              <AlertTriangle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-lg font-medium text-gray-700 mb-2">No environmental reports found</p>
+              <p className="text-sm text-gray-500">No reports match your current filters, or be the first to report environmental issues in your area! 🍃</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -251,7 +316,7 @@ export default function AdminDashboardPage() {
                       <div className="flex items-center gap-3 mb-2">
                         <div className="flex items-center gap-2">
                           {getStatusIcon(issue.status)}
-                          <span className="font-semibold text-lg">Issue #{issue.id}</span>
+                          <span className="font-semibold text-lg">Environmental Report #{issue.id}</span>
                         </div>
                         {getStatusBadge(issue.status)}
                         {getPriorityBadge(issue.priority)}
