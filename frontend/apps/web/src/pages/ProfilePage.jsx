@@ -25,7 +25,7 @@ const InfoItem = ({ icon, label, value }) => (
   </div>
 );
 
-// A visual component for the Trust Score
+// A visual component for the Eco-Score (formerly Trust Score)
 const TrustScoreIndicator = ({ score }) => {
   const [displayScore, setDisplayScore] = useState(0);
 
@@ -71,7 +71,8 @@ const TrustScoreIndicator = ({ score }) => {
       </svg>
       <div className="text-center">
         <p className={`text-4xl font-bold ${getScoreColor(score)}`}>{score}</p>
-        <p className="text-xs font-medium text-slate-500">Trust Score</p>
+        <p className="text-xs font-medium text-slate-500">Eco-Score</p>
+        <p className="text-xs text-slate-400 mt-1">Your contribution to environmental monitoring</p>
       </div>
     </div>
   );
