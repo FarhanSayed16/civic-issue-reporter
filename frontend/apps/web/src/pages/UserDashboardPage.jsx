@@ -157,7 +157,7 @@ function ChatModal({ issue, onClose, onSendMessage, newMessage, setNewMessage })
       <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="flex flex-col">
-            <CardTitle>Chat - Issue #{issue.id}</CardTitle>
+            <CardTitle>Chat - Environmental Report #{issue.id}</CardTitle>
             <div className="text-sm text-gray-600 mt-1">
               <span className="font-medium">Reporter:</span> {issue.reporter_name || 'Anonymous'}
               {issue.reporter_id && (
@@ -183,13 +183,16 @@ function ChatModal({ issue, onClose, onSendMessage, newMessage, setNewMessage })
               </div>
               <div>
                 <span className="font-medium text-gray-700">Status:</span>
-                <span className={`ml-1 px-2 py-1 rounded-full text-xs font-medium ${
+                  <span className={`ml-1 px-2 py-1 rounded-full text-xs font-medium ${
                   issue.status === 'new' ? 'bg-blue-100 text-blue-800' : 
                   issue.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' : 
                   issue.status === 'resolved' ? 'bg-green-100 text-green-800' :
                   issue.status === 'spam' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
                 }`}>
-                  {issue.status}
+                  {issue.status === 'new' ? 'Reported' : 
+                   issue.status === 'in_progress' ? 'Cleanup In Progress' : 
+                   issue.status === 'resolved' ? 'Cleaned Up' : 
+                   issue.status === 'spam' ? 'Spam' : issue.status}
                 </span>
               </div>
               <div>
@@ -320,10 +323,10 @@ export default function UserDashboardPage() {
   const handleStatusUpdate = async (issueId, newStatus) => {
     try {
       await updateIssue({ issueId, issueUpdate: { status: newStatus } }).unwrap();
-      toast.success(`Issue #${issueId} status updated to ${newStatus.replace('_', ' ')}`);
+      toast.success(`Environmental Report #${issueId} status updated to ${newStatus.replace('_', ' ')}`);
       refetch();
     } catch (error) {
-      toast.error(`Failed to update issue #${issueId}: ${error.data?.detail || error.message}`);
+      toast.error(`Failed to update environmental report #${issueId}: ${error.data?.detail || error.message}`);
     }
   };
 
@@ -349,7 +352,13 @@ export default function UserDashboardPage() {
       default: 'bg-gray-400 text-white',
     };
     const className = statusMap[status] || statusMap.default;
-    const formattedStatus = (status || '').replace('_', ' ').replace(/^./, c => c.toUpperCase());
+    const statusLabelMap = {
+      'new': 'Reported',
+      'in_progress': 'Cleanup In Progress',
+      'resolved': 'Cleaned Up',
+      'spam': 'Spam'
+    };
+    const formattedStatus = statusLabelMap[status] || (status || '').replace('_', ' ').replace(/^./, c => c.toUpperCase());
     return <Badge className={`px-2 py-1 rounded-full text-xs font-medium ${className}`}>{formattedStatus}</Badge>;
   };
 
@@ -417,7 +426,7 @@ export default function UserDashboardPage() {
       {/* Issues List */}
       <Card className="shadow-sm">
         <CardHeader>
-          <CardTitle className="text-xl text-slate-800">My Assigned Issues</CardTitle>
+          <CardTitle className="text-xl text-slate-800">My Assigned Environmental Reports</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -436,14 +445,19 @@ export default function UserDashboardPage() {
               <SelectTrigger className="bg-white"><SelectValue placeholder="Filter by Category" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="Potholes">Potholes</SelectItem>
-                <SelectItem value="Road Cracks">Road Cracks</SelectItem>
-                <SelectItem value="Manholes">Manholes</SelectItem>
-                <SelectItem value="Stagnant Water">Stagnant Water</SelectItem>
-                <SelectItem value="Damaged Signboards">Damaged Signboards</SelectItem>
+                <SelectItem value="Open Garbage Dump">Open Garbage Dump</SelectItem>
+                <SelectItem value="Plastic Pollution">Plastic Pollution</SelectItem>
+                <SelectItem value="Open Burning">Open Burning</SelectItem>
+                <SelectItem value="Water Body Pollution">Water Body Pollution</SelectItem>
+                <SelectItem value="Construction Waste">Construction Waste</SelectItem>
+                <SelectItem value="Electronic Waste (E-Waste)">Electronic Waste (E-Waste)</SelectItem>
+                <SelectItem value="Biomedical Waste">Biomedical Waste</SelectItem>
+                <SelectItem value="Green Space Degradation">Green Space Degradation</SelectItem>
+                <SelectItem value="Drainage Blockage">Drainage Blockage</SelectItem>
+                <SelectItem value="Water Pollution / Contaminated Water">Water Pollution / Contaminated Water</SelectItem>
                 <SelectItem value="Garbage Overflow">Garbage Overflow</SelectItem>
-                <SelectItem value="Trash">Trash</SelectItem>
-                <SelectItem value="Other Issues">Other Issues</SelectItem>
+                <SelectItem value="Illegal Dumping / Litter">Illegal Dumping / Litter</SelectItem>
+                <SelectItem value="Other Environmental Issues">Other Environmental Issues</SelectItem>
               </SelectContent>
             </Select>
 
@@ -464,7 +478,9 @@ export default function UserDashboardPage() {
             </div>
           ) : !issues || issues.length === 0 ? (
             <div className="text-center text-slate-500 py-10">
-              <p>No issues assigned to you.</p>
+              <CheckCircle2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-lg font-medium text-gray-700 mb-2">No environmental reports assigned to you</p>
+              <p className="text-sm text-gray-500">All clear! No reports need your attention at the moment.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -473,7 +489,7 @@ export default function UserDashboardPage() {
                   <div className="flex justify-between items-start">
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold">Issue #{issue.id}</h3>
+                        <h3 className="text-lg font-semibold">Environmental Report #{issue.id}</h3>
                         {statusBadge(issue.status)}
                         {priorityBadge(issue.priority)}
                       </div>
@@ -508,7 +524,7 @@ export default function UserDashboardPage() {
                       )}
                       {issue.status === 'in_progress' && (
                         <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white" onClick={() => handleResolveClick(issue)}>
-                          <CheckCircle2 className="h-4 w-4 mr-2" /> Resolve
+                          <CheckCircle2 className="h-4 w-4 mr-2" /> Mark as Cleaned Up
                         </Button>
                       )}
                       {issue.status !== 'spam' && (
@@ -654,9 +670,9 @@ export default function UserDashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p>Are you sure you want to mark Issue #{issueToResolve.id} as resolved?</p>
+              <p>Are you sure you want to mark Environmental Report #{issueToResolve.id} as cleaned up/remediated?</p>
               <p className="text-sm text-slate-600">
-                This will notify the user and increase their trust score by 10 points.
+                This will notify the user and increase their eco-score by 10 points.
               </p>
               <div className="flex gap-2 justify-end">
                 <Button variant="outline" onClick={() => setShowResolveConfirm(false)}>
